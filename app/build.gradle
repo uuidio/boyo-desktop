@@ -1,0 +1,112 @@
+plugins {
+    id 'com.android.application'
+}
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply from: 'android-app-version-config.gradle'
+apply from: rootProject.file('android-base-config.gradle')
+android {
+
+    defaultConfig {
+        applicationId "com.android.launcher"
+        multiDexEnabled = true
+        androidExtensions {
+            experimental = true
+        }
+
+        kotlin {
+            experimental {
+                coroutines "enable"
+            }
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        mycofig {
+            storeFile file('..\\platform.keystore')
+            storePassword "android"
+            keyAlias "platform"
+            keyPassword "android"
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.mycofig
+        }
+
+        preview {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.mycofig
+        }
+
+        debug {
+            signingConfig signingConfigs.mycofig
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    ndkVersion '21.0.6113669'
+}
+
+dependencies {
+//    provided files('libs/classes.jar')
+    implementation 'com.android.support:multidex:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.orhanobut:logger:2.2.0"
+    implementation "org.greenrobot:eventbus:3.1.1"
+    api 'com.google.code.gson:gson:2.8.6'
+    implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    api 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    api 'io.reactivex.rxjava2:rxjava:2.2.2'
+
+    api "com.squareup.retrofit2:retrofit:$retrofitSdkVersion"
+//    api "com.squareup.retrofit2:converter-gson:$retrofitSdkVersion"
+    api "com.squareup.retrofit2:adapter-rxjava2:$retrofitSdkVersion"
+
+    api "com.squareup.okhttp3:logging-interceptor:3.5.0"
+    api "com.sm:tools:1.0.6"
+    implementation 'com.sm:http-download:1.0.13'
+
+
+    implementation 'com.camerakit:camerakit:1.0.0-beta3.11'
+    implementation 'com.camerakit:jpegkit:0.1.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+
+}
+repositories {
+    mavenCentral()
+}
+
+preBuild {
+    doLast {
+        def imlFile = file(project.name + ".iml")
+        println('Change ' + project.name + '.iml order')
+        try {
+            def parsedXml = (new XmlParser()).parse(imlFile)
+            def jdkNode = parsedXml.component[1].orderEntry.find { it.'@type' == 'jdk' }
+            parsedXml.component[1].remove(jdkNode)
+            def sdkString = "Android API " + android.compileSdkVersion.substring("android-".length()) + " Platform"
+            new groovy.util.Node(parsedXml.component[1], 'orderEntry', ['type': 'jdk', 'jdkName': sdkString, 'jdkType': 'Android SDK'])
+            groovy.xml.XmlUtil.serialize(parsedXml, new FileOutputStream(imlFile))
+        } catch (FileNotFoundException e) {
+            // nop, iml not found
+        }
+    }
+}
