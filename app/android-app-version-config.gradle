@@ -1,0 +1,65 @@
+apply from: file('android-config-public-params.gradle')
+
+final versionCodeBuild = ext.versionCode
+final versionNameBuild = getNewVersionNameWithWrite()
+final buildDate = ext.buildDate
+
+android {
+
+    defaultConfig {
+        versionCode versionCodeBuild
+        versionName versionNameBuild
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            if (outputFileName.endsWith('.apk')) {
+                if (variant.buildType.name == "debug") {
+                    outputFileName = "debug.apk"
+                } else {
+                    // apk_渠道名-版本号-版本名称-编译时间.apk
+                    def variantProductFlavorsName = (variant.productFlavors[0] == null ? "ssc" : variant.productFlavors[0].name) + "-"
+                    outputFileName = "live_desktop" + "-" +
+                            "${variantProductFlavorsName}" +
+                            "${variant.mergedFlavor.versionCode}-" +
+                            "${variant.mergedFlavor.versionName}-" +
+                            "${buildDate}-" +
+                            "${variant.buildType.name}.apk"
+                }
+            }
+        }
+    }
+}
+
+/*int getNewVersionCodeWithWrite() {
+    def newCode = ext.versionCode
+    if(ext.isNewVersion){
+        def versionCodeFile = file('android_app_version_code.properties')
+        Properties versionCodeProps = new Properties()
+        versionCodeProps['VERSION_CODE'] = newCode.toString()
+        versionCodeProps.store(versionCodeFile.newWriter(), null)
+    }
+    return newCode
+}*/
+
+String getNewVersionNameWithWrite() {
+    String versionName
+    if (ext.isRelease) {
+        versionName = getNewVersionNameReleaseWithWrite()
+    } else {
+        versionName = ext.versionNamePreview
+    }
+    return versionName
+}
+
+String getNewVersionNameReleaseWithWrite() {
+    def releaseVersionName = ext.versionNameRelease
+    if (ext.isNewVersion) {
+        def versionNameFile = file('android_app_version_name_release.properties')
+        Properties versionNameProps = new Properties()
+        versionNameProps['version_name_preview'] = releaseVersionName[0]
+        versionNameProps['version_name'] = releaseVersionName[1]
+        versionNameProps.store(versionNameFile.newWriter(), null)
+    }
+    return releaseVersionName[1]
+}

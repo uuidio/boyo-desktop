@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_setting"
+    tools:context=".livemonitor.setting.AboutNativeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#80323232"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/rl_top"
+        android:layout_height="130px">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:id="@+id/ll_back"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="39px"
+                android:background="@drawable/bg_back"
+                android:id="@+id/back"
+                android:layout_marginLeft="39px"
+                android:layout_height="30px"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="36px"
+                android:layout_toRightOf="@id/back"
+                android:textColor="@color/white"
+                android:layout_marginLeft="15px"
+                android:text="返回"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="36px"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:text="关于本机"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_version"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_top"
+        android:layout_height="200px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:text="软件版本"
+            android:layout_marginLeft="91px"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_soft_version"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            tools:text="YOUSV0.0.0.1"
+            android:layout_marginRight="54px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/background_light"
+            android:layout_height="1px"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_haw_version"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_version"
+        android:layout_height="200px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:text="固件版本"
+            android:layout_marginLeft="91px"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_haw_version"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            tools:text="YOUSV0.0.0.2"
+            android:layout_marginRight="54px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:layout_height="1px"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_address"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_haw_version"
+        android:layout_height="200px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:text="MAC地址"
+            android:layout_marginLeft="91px"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_mac"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            tools:text="2A:3B:4C:5D:6E"
+            android:layout_marginRight="54px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:layout_height="1px"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_imea"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_address"
+        android:layout_height="200px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:text="IMEI"
+            android:layout_marginLeft="91px"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_imei"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            tools:text="A00000B44500077"
+            android:layout_marginRight="54px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textSize="36px"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:layout_height="1px"/>
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

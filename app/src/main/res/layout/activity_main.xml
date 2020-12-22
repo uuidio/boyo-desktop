@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/xxx"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/app_main_bg" >
+
+    <ImageView
+        android:layout_width="350px"
+        android:layout_marginLeft="66px"
+        android:id="@+id/logo"
+        android:background="@mipmap/logo_icon"
+        android:layout_marginTop="69px"
+        android:layout_height="173px"/>
+
+
+    <com.android.launcher.AppListPageView
+        android:id="@+id/applist_view"
+        android:layout_below="@id/logo"
+        android:layout_marginTop="109px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

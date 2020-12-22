@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_horizontal"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="766px"
+        android:layout_marginTop="432px"
+        android:background="@drawable/bg_dialog_remind"
+        android:layout_height="480px">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="36px"
+            android:layout_marginTop="138px"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/tv_title"
+            android:textColor="@color/white"
+            tools:text="是否重置网络设置？"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="36px"
+            android:layout_marginTop="76px"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/tv_title_up"
+            android:visibility="invisible"
+            android:textColor="@color/white"
+            tools:text="正在下载更新"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="72px"
+            android:textStyle="bold"
+            android:layout_marginTop="38px"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/tv_up_process"
+            android:textColor="#FF00C83A"
+            android:layout_below="@id/tv_title_up"
+            android:visibility="invisible"
+            tools:text="58.8%"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_below="@id/tv_up_process"
+            android:layout_marginLeft="33px"
+            android:layout_marginRight="33px"
+            android:id="@+id/progress"
+            android:progress="50"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:max="100"
+            android:progressDrawable="@drawable/bg_progress"
+            android:visibility="invisible"
+            android:layout_marginTop="36px"
+            android:layout_height="24px"/>
+        
+        <Button
+            android:layout_width="300px"
+            android:background="@drawable/bg_btn"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="58px"
+            android:textColor="#FF323232"
+            android:id="@+id/btn_cancle"
+            android:text="取消"
+            android:textSize="36px"
+            android:layout_marginBottom="63px"
+            android:layout_height="88px"/>
+
+        <Button
+            android:layout_width="300px"
+            android:background="@drawable/bg_btn"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/white"
+            android:textSize="36px"
+            android:text="确定"
+            android:id="@+id/btn_ok"
+            android:layout_marginRight="58px"
+            android:backgroundTint="@color/blue"
+            android:layout_marginBottom="63px"
+            android:layout_height="88px"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

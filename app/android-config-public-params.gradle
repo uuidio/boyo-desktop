@@ -1,0 +1,85 @@
+//ext.isDevIng = ext.runAsApp
+apply from: 'android_app_version_name_preview.gradle'
+
+ext.versionNamePreview = ext.versionNamePreview
+ext.isNewVersion = isNewVersion()
+ext.isRelease = isReleaseBuildType()
+ext.isPreview = isPreviewBuildType()
+ext.versionCode = getNewVersionCode(ext.versionNamePreview)
+ext.versionNameRelease = getNewVersionNameRelease()
+ext.buildDate = buildDate()
+
+static int getNewVersionCode(versionName) {
+    def codes = versionName.split("\\.")
+    if (codes[1].toInteger() > 99 || codes[2].toInteger() > 99) {
+        throw GradleException("Century exception")
+    } else {
+        return (codes[0].toInteger()) * 10000 + codes[1].toInteger() * 100 + codes[2].toInteger()
+    }
+}
+
+/*int getNewVersionCode() {
+    def versionCodeFile = file('android_app_version_code.properties')
+    Properties versionCodeProps = new Properties()
+    versionCodeProps.load(new FileInputStream(versionCodeFile))
+    def versionCode = versionCodeProps['VERSION_CODE'].toInteger()
+    if (ext.isNewVersion) {
+        ++versionCode
+    }
+    return versionCode
+}*/
+
+String[] getNewVersionNameRelease() {
+    def versionNameFile = file('android_app_version_name_release.properties')
+    Properties versionNameProps = new Properties()
+    versionNameProps.load(new FileInputStream(versionNameFile))
+    String versionNamePreviewString = versionNameProps['version_name_preview'].toString()
+    String versionNameReleaseString = versionNameProps['version_name'].toString()
+    if (ext.isNewVersion) {
+        versionNamePreviewString = versionNamePreview.toString()
+        String[] oldVersionReleaseNames = versionNameReleaseString.split("\\.")
+        String[] versionNamePreviews = versionNamePreviewString.split("\\.")
+        if (oldVersionReleaseNames[1] == versionNamePreviews[1]) {
+            versionNameReleaseString = oldVersionReleaseNames[0] + "." + oldVersionReleaseNames[1] + "." + (oldVersionReleaseNames[2].toInteger() + 1)
+        } else if (versionNamePreviews[0].toInteger() > oldVersionReleaseNames[0].toInteger() || versionNamePreviews[1].toInteger() > oldVersionReleaseNames[1].toInteger()) {
+            versionNameReleaseString = versionNamePreviews[0] + "." + versionNamePreviews[1] + ".0"
+        } else {
+            throw GradleException("VersionName for release create fail")
+        }
+    }
+    return [versionNamePreviewString, versionNameReleaseString]
+}
+
+boolean isNewVersion() {
+    def versionNameFile = file('android_app_version_name_release.properties')
+    Properties versionNameProps = new Properties()
+    versionNameProps.load(new FileInputStream(versionNameFile))
+    boolean isSameVersion = versionNameProps['version_name_preview'].toString() == ext.versionNamePreview.toString()
+    if ((isReleaseBuildType() || isPreviewBuildType()) && !isSameVersion) {
+        return true
+    }
+    return false
+}
+
+def isPreviewBuildType() {
+    return isBuildType("Preview") || isBuildType("preview") || "aP" in gradle.startParameter.taskNames
+}
+
+def isReleaseBuildType() {
+    return isBuildType("Release") || isBuildType("release") || "aR" in gradle.startParameter.taskNames
+}
+
+boolean isBuildType(String type) {
+    def taskNames = gradle.startParameter.taskNames
+    boolean is = false
+    taskNames.forEach({
+        if (!is) {
+            is = (it.startsWith(":app:assemble") || it.startsWith("assemble") || it.startsWith("resguard") || it.startsWith("buildTinkerPatch")) && it.endsWith(type)
+        }
+    })
+    return is
+}
+
+static def buildDate() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}

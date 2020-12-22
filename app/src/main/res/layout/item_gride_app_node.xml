@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_5">
+    <!-- 模拟键盘按钮，当然你可以用Button，但要注意Button和GrideView的点击响应问题 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:id="@+id/image_view"/>
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30"
+        android:gravity="center"
+        android:padding="0dp"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginRight="@dimen/dp_10"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_13" />
+
+</LinearLayout>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="110px"
+        android:layout_marginRight="@dimen/dp_5"
+        android:id="@+id/ll_bar"
+        android:layout_marginLeft="@dimen/dp_5"
+        android:background="@drawable/bg_removable"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/radio_group"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:id="@+id/rl_normal"
+                android:paddingTop="@dimen/dp_5"
+                android:layout_height="110px">
+
+                <ImageView
+                    android:layout_width="65px"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/image"
+                    android:layout_height="50px"/>
+
+                <ImageView
+                    android:layout_width="@dimen/dp_10"
+                    android:id="@+id/im_drop"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/image"
+                    android:background="@mipmap/btn_dropup"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:background="@null"
+                android:text="视频"
+                android:layout_weight="1"
+                android:textSize="24px"
+                android:textColor="@color/white"
+                android:id="@+id/radio_video"
+                android:button="@null"
+                android:gravity="center"
+                android:drawableTop="@drawable/bg_radio_video"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:id="@+id/radio_audio"
+                android:text="音频"
+                android:textSize="24px"
+                android:textColor="@color/white"
+                android:button="@null"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center"
+                android:drawableTop="@drawable/bg_radio_audio"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="贴纸"
+                android:id="@+id/radio_pic"
+                android:textColor="@color/white"
+                android:textSize="24px"
+                android:button="@null"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dp_10"
+                android:drawableTop="@drawable/bg_radio_pic"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="关于"
+                android:id="@+id/radio_about"
+                android:layout_marginTop="@dimen/dp_10"
+                android:textColor="@color/white"
+                android:textSize="24px"
+                android:button="@null"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/dp_25"
+                android:drawableTop="@drawable/bg_radio_about"
+                android:layout_height="wrap_content"/>
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="317px"
+        android:id="@+id/ll_right_video"
+
+        android:layout_toRightOf="@id/ll_bar"
+        android:layout_marginLeft="37px"
+        android:paddingLeft="22px"
+        android:paddingRight="22px"
+        android:visibility="gone"
+        android:background="@drawable/bg_video"
+        android:paddingTop="30px"
+        android:paddingBottom="30px"
+        android:layout_alignTop="@id/ll_bar"
+        android:orientation="vertical"
+        android:layout_marginTop="60px"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="44px"
+            android:layout_height="wrap_content">
+            
+            <ImageView
+                android:layout_width="113px"
+                android:background="@color/teal_200"
+                android:layout_height="201px"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_marginLeft="22px"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="HDMI 1"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/white"
+                    android:textSize="24px"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:background="@mipmap/btn_vertical_focused"
+                    android:layout_above="@id/im_horization"
+                    android:layout_marginBottom="22px"
+                    android:layout_height="wrap_content"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/im_horization"
+                    android:background="@mipmap/btn_vertical_normal"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="44px"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="113px"
+                android:background="@color/teal_200"
+                android:layout_height="201px"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_marginLeft="22px"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="HDMI 1"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/white"
+                    android:textSize="24px"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:background="@mipmap/btn_vertical_focused"
+                    android:layout_above="@id/im_horization"
+                    android:layout_marginBottom="22px"
+                    android:layout_height="wrap_content"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/im_horization"
+                    android:background="@mipmap/btn_vertical_normal"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="113px"
+                android:background="@color/teal_200"
+                android:layout_height="201px"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:layout_marginLeft="22px"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="HDMI 1"
+                    android:layout_alignParentTop="true"
+                    android:textColor="@color/white"
+                    android:textSize="24px"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:background="@mipmap/btn_vertical_focused"
+                    android:layout_above="@id/im_horization"
+                    android:layout_marginBottom="22px"
+                    android:layout_height="wrap_content"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/im_horization"
+                    android:background="@mipmap/btn_vertical_normal"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="318px"
+        android:background="@drawable/bg_video"
+        android:id="@+id/rv_audio"
+        android:layout_toRightOf="@id/ll_bar"
+        android:paddingBottom="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_15"
+       android:visibility="gone"
+        android:layout_marginTop="70px"
+        android:layout_alignTop="@id/ll_bar"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="425px"
+        android:background="@drawable/bg_video"
+        android:id="@+id/rv_pic"
+        android:layout_toRightOf="@id/ll_bar"
+        android:paddingBottom="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_15"
+        android:visibility="gone"
+        android:layout_marginTop="270px"
+        android:layout_alignTop="@id/ll_bar"
+        android:layout_marginLeft="@dimen/dp_15"
+        android:layout_height="795px"/>
+</RelativeLayout>

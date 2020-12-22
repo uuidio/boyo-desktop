@@ -1,0 +1,39 @@
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion tSdkVersion
+    buildToolsVersion bToolsVersion
+
+    defaultConfig {
+        minSdkVersion mSdkVersion
+        targetSdkVersion tSdkVersion
+        flavorDimensions "null"
+
+        androidExtensions {
+            experimental = true
+        }
+    }
+
+    buildTypes {
+        debug {
+        }
+        preview {
+        }
+        release {
+        }
+    }
+
+    resourcePrefix project.name
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

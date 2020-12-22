@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/bg_setting"
+    android:layout_height="match_parent"
+    tools:context=".livemonitor.setting.SettingActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:background="#80323232"
+        android:id="@+id/rl_top"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="130px">
+
+     <LinearLayout
+         android:layout_width="wrap_content"
+         android:layout_centerVertical="true"
+         android:id="@+id/ll_back"
+         android:gravity="center_vertical"
+         android:layout_height="match_parent">
+         <ImageView
+             android:layout_width="39px"
+             android:background="@drawable/bg_back"
+             android:id="@+id/back"
+             android:layout_marginLeft="39px"
+             android:layout_height="30px"/>
+
+         <TextView
+             android:layout_width="wrap_content"
+             android:textSize="36px"
+             android:layout_toRightOf="@id/back"
+             android:textColor="@color/white"
+             android:layout_marginLeft="15px"
+             android:text="返回"
+             android:layout_height="wrap_content"/>
+     </LinearLayout>
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="36px"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:text="设置"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="36px"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:id="@+id/tv_clean_add"
+            android:textColor="#FFD70D19"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="48px"
+            android:text="清除数据"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="230px"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_top"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/ll_network"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:background="@mipmap/icon_wifi"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="36px"
+                android:layout_marginTop="17px"
+                android:text="网络设置"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:id="@+id/ll_updata"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:background="@mipmap/icon_update"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="36px"
+                android:layout_marginTop="17px"
+                android:text="下载更新"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:id="@+id/ll_locat"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:background="@mipmap/icon_equipment"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="36px"
+                android:layout_marginTop="17px"
+                android:text="关于本机"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:id="@+id/ll_about"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:background="@mipmap/icon_abouts"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="36px"
+                android:layout_marginTop="17px"
+                android:text="关于我们"
+                android:layout_height="wrap_content"/>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
