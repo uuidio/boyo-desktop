@@ -6,9 +6,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/iconuous"
+        android:icon="@mipmap/icon_boyo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/iconuous"
+        android:roundIcon="@mipmap/icon_boyo"
         android:sharedUserId="android.uid.system"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
