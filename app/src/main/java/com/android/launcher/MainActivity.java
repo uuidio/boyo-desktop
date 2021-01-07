@@ -5,17 +5,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.launcher.livemonitor.api.entity.User;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
 
     private AppListPageView mAppListPageView = null;
     private AppChangeReceiver mAppChangeReceiver = null;
+    private RelativeLayout rl_user_info;
+    private TextView tv_id,tv_name;
+    private Button btn_exit_login;
 
     private class AppChangeReceiver extends BroadcastReceiver {
         @Override
@@ -51,6 +60,53 @@ public class MainActivity extends AppCompatActivity {
         filter3.addDataScheme("package");
         this.registerReceiver(mAppChangeReceiver, filter3);
 
+        btn_exit_login=findViewById(R.id.btn_exit_login);
+        tv_name=findViewById(R.id.tv_name);
+        tv_id=findViewById(R.id.tv_id);
+        ImageView iv_people=findViewById(R.id.iv_people);
+        iv_people.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User.UserData userData=GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(MainActivity.this,"userData","").toString(), User.UserData.class);
+                String id= TextUtils.isEmpty(userData.getId()+"")?"":userData.getId()+"";
+                String name=TextUtils.isEmpty(userData.getName())?"":userData.getName();
+                tv_id.setText(id);
+                tv_name.setText(name);
+                rl_user_info.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        TextView tv_exchange_pass=findViewById(R.id.tv_exchange_pass);
+        tv_exchange_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,ForgetPassActivity.class));
+            }
+        });
+
+        btn_exit_login.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              SharedPreferencesUtils.clear(MainActivity.this);
+              finish();
+              startActivity(new Intent(MainActivity.this,LoginActivity.class));
+
+          }
+      });
+
+        rl_user_info=findViewById(R.id.rl_user_info);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.iv_back:
+                if (rl_user_info!=null)
+                rl_user_info.setVisibility(View.GONE);
+                break;
+        }
     }
 
     @Override

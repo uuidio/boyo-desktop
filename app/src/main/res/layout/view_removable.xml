@@ -25,10 +25,11 @@
                 android:layout_height="110px">
 
                 <ImageView
-                    android:layout_width="65px"
+                    android:layout_width="90px"
                     android:layout_centerInParent="true"
                     android:id="@+id/image"
-                    android:layout_height="50px"/>
+                    android:background="@mipmap/ic_boya"
+                    android:layout_height="42px"/>
 
                 <ImageView
                     android:layout_width="@dimen/dp_10"
@@ -84,7 +85,21 @@
                 android:layout_width="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:text="关于"
+                android:text="提词器"
+                android:id="@+id/radio_inscription"
+                android:textColor="@color/white"
+                android:textSize="24px"
+                android:button="@null"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/dp_10"
+                android:drawableTop="@drawable/bg_radio_inscription"
+                android:layout_height="wrap_content"/>
+
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="公告"
                 android:id="@+id/radio_about"
                 android:layout_marginTop="@dimen/dp_10"
                 android:textColor="@color/white"
@@ -266,4 +281,13 @@
         android:layout_alignTop="@id/ll_bar"
         android:layout_marginLeft="@dimen/dp_15"
         android:layout_height="795px"/>
+
+    <!--公告-->
+    <RelativeLayout
+        android:id="@+id/rl_about"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+    </RelativeLayout>
 </RelativeLayout>

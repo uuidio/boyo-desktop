@@ -154,7 +154,7 @@ public class AppListPageView extends RelativeLayout {
                     it.getInfo().labelRes = R.mipmap.icon_weixin;
                     break;
                 case "com.kol.jumhz":
-                    it.getInfo().labelRes = R.mipmap.iconuous;
+                    it.getInfo().labelRes = R.mipmap.icon_boyo;
                     break;
                 default:
                     it.getInfo().labelRes = R.mipmap.ic_launcher;

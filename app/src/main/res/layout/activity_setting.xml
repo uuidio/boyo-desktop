@@ -157,7 +157,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:background="@mipmap/icon_abouts"
+                android:background="@mipmap/icon_boyo"
                 android:layout_height="wrap_content"/>
 
             <TextView

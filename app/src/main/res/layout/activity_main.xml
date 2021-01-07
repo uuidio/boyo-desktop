@@ -8,12 +8,30 @@
     tools:ignore="ResourceName">
 
     <ImageView
-        android:layout_width="350px"
-        android:layout_marginLeft="66px"
+        android:layout_width="141px"
+        android:layout_marginLeft="68px"
         android:id="@+id/logo"
         android:background="@mipmap/logo_icon"
-        android:layout_marginTop="69px"
-        android:layout_height="173px"/>
+        android:layout_marginTop="86px"
+        android:layout_height="117px"/>
+
+
+    <ImageView
+        android:layout_width="125px"
+        android:layout_marginRight="78px"
+        android:id="@+id/iv_people"
+        android:src="@mipmap/ic_people"
+        android:background="@mipmap/logo_bg"
+        android:clickable="true"
+        android:paddingLeft="35px"
+        android:paddingRight="35px"
+        android:paddingTop="34px"
+        android:paddingBottom="32px"
+        android:layout_marginTop="91px"
+        android:layout_alignParentRight="true"
+        android:layout_height="125px"/>
+
+
 
 
     <com.android.launcher.AppListPageView
@@ -23,5 +41,123 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true" />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_user_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/app_main_bg"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="28px"
+            android:layout_height="45px"
+            android:layout_marginTop="68px"
+            android:layout_marginLeft="44px"
+            android:clickable="true"
+            android:onClick="onClick"
+            android:background="@mipmap/ic_back"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="账号信息"
+            android:textSize="47px"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="69px"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#C4B3C9"
+            android:layout_marginTop="183px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="账号id"
+            android:textSize="36px"
+            android:layout_marginLeft="41px"
+            android:layout_marginTop="262px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="账号名称"
+            android:textSize="36px"
+            android:layout_marginLeft="41px"
+            android:layout_marginTop="433px"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="账号操作"
+            android:textSize="36px"
+            android:layout_marginLeft="41px"
+            android:layout_marginTop="597px"/>
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text=""
+            android:textSize="36px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="44px"
+            android:layout_marginTop="261px"/>
+
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text=""
+            android:textSize="36px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="44px"
+            android:layout_marginTop="436px"/>
+
+
+        <TextView
+            android:id="@+id/tv_exchange_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="修改密码"
+            android:drawableRight="@mipmap/ic_next"
+            android:drawablePadding="10px"
+            android:textSize="36px"
+            android:clickable="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="44px"
+            android:layout_marginTop="600px"/>
+
+
+        <Button
+            android:layout_width="1005px"
+            android:layout_height="132px"
+            android:id="@+id/btn_exit_login"
+            android:text="退出登录"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:clickable="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="1042px"
+            android:textSize="48px"
+            android:background="@drawable/shape_btn_login"/>
+
+
+    </RelativeLayout>
 
 </RelativeLayout>

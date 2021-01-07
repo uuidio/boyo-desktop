@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/app_main_bg"
+   >
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="33px"
+        android:layout_height="62px"
+        android:layout_marginTop="93px"
+        android:layout_marginLeft="52px"
+        android:clickable="true"
+        android:onClick="onClick"
+        android:background="@mipmap/ic_back"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="账号登录"
+        android:textColor="@color/white"
+        android:textSize="67px"
+        android:layout_marginLeft="51px"
+        android:layout_marginTop="229px"/>
+
+    <ImageView
+        android:layout_width="125px"
+        android:layout_marginRight="53px"
+        android:id="@+id/iv_setting"
+        android:src="@mipmap/ic_white_setting"
+        android:background="@mipmap/logo_bg"
+        android:clickable="true"
+        android:padding="22px"
+        android:layout_marginTop="205px"
+        android:layout_alignParentRight="true"
+        android:layout_height="125px"/>
+
+    <EditText
+        android:layout_width="1008px"
+        android:layout_height="160px"
+        android:id="@+id/et_user"
+        android:paddingLeft="59px"
+        android:gravity="center_vertical"
+        android:textSize="48px"
+        android:hint="用户名/手机号"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="523px"
+        android:textColorHint="#C3B3D1"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_edittext_login"/>
+
+    <ImageView
+        android:layout_width="57px"
+        android:layout_height="60px"
+        android:layout_marginRight="45px"
+        android:background="@mipmap/ic_login_people"
+        android:layout_marginTop="573px"
+        android:layout_alignRight="@+id/et_user"
+     />
+
+    <EditText
+        android:layout_width="1008px"
+        android:layout_height="160px"
+        android:id="@+id/et_password"
+        android:paddingLeft="59px"
+        android:gravity="center_vertical"
+        android:textSize="48px"
+        android:hint="密码"
+        android:inputType="textPassword"
+        android:layout_marginTop="735px"
+        android:layout_centerHorizontal="true"
+        android:textColorHint="#C3B3D1"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_edittext_login"/>
+
+    <ImageView
+        android:layout_width="50px"
+        android:layout_height="67px"
+        android:layout_marginRight="45px"
+        android:background="@mipmap/ic_login_password"
+        android:layout_marginTop="781px"
+        android:layout_alignRight="@+id/et_password"
+        />
+
+    <Button
+        android:layout_width="1005px"
+        android:layout_height="132px"
+        android:id="@+id/btn_login"
+        android:text="登录"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:clickable="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="1004px"
+        android:textSize="48px"
+        android:background="@drawable/shape_btn_login"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_forget_password"
+        android:textSize="48px"
+        android:text="忘记密码"
+        android:clickable="true"
+        android:textColor="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="46px"
+        android:layout_marginTop="1196px"
+        />
+
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="150px"
+        android:layout_height="150px"
+        android:layout_centerInParent="true"
+        android:tooltipText="加载中..."
+        android:visibility="gone"
+        />
+
+
+
+
+</RelativeLayout>

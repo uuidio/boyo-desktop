@@ -103,10 +103,11 @@ object NaoManager {
     }
 
     fun baseUrl(buildType: String = this.buildType): String {
-        return when (buildType) {
-            BuildType.DEBUG, BuildType.PREVIEW -> "http://testv20.smartconns.com:8095/"
-            else -> "https://apigw.jizhigou.smartconns.com:9998/"
-        }
+        return "https://lanlink.smartconns.com/"
+//        return when (buildType) {
+//            BuildType.DEBUG, BuildType.PREVIEW -> "http://testv20.smartconns.com:8095/"
+//            else -> "https://apigw.jizhigou.smartconns.com:9998/"
+//        }
     }
 
     fun <T> create(apiClass: Class<out T>): T {

@@ -56,6 +56,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     ndkVersion '21.0.6113669'
+
+    sourceSets{
+        main{
+            jniLibs.srcDirs=['libs']
+        }
+    }
 }
 
 dependencies {

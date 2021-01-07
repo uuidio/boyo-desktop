@@ -2,6 +2,8 @@ package com.android.launcher.livemonitor.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +19,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.android.launcher.C001Common;
+import com.android.launcher.ForgetPassActivity;
+import com.camerakit.CameraKit;
+import com.camerakit.CameraKitView;
+import com.hotron.c002fac.tools.HotronJni;
 import com.android.launcher.R;
 import com.android.launcher.livemonitor.adapter.AudioSelectAdapter;
 import com.android.launcher.livemonitor.adapter.PicAdapter;
+import com.hotron.c002fac.camera.CameraWrapper;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,10 +42,10 @@ public class RemovableView extends FrameLayout {
     private final Context mContext;
     private View view;
     private RadioGroup radioGroup;
-    private RadioButton radioVideo, radioAudio, radioPic, radioAbout;
+    private RadioButton radioVideo, radioAudio, radioPic, radioAbout,radioInscription;
     private LinearLayout llBar;
 
-    private RelativeLayout llNormal;
+    private RelativeLayout llNormal,rl_about;
 
     private RecyclerView rvAudio,rvPic;
 
@@ -70,6 +78,7 @@ public class RemovableView extends FrameLayout {
         radioGroup = view.findViewById(R.id.radio_group);
         radioVideo = view.findViewById(R.id.radio_video);
         radioAudio = view.findViewById(R.id.radio_audio);
+        radioInscription= view.findViewById(R.id.radio_inscription);
         radioPic = view.findViewById(R.id.radio_pic);
         radioAbout = view.findViewById(R.id.radio_about);
         llRightVideo = view.findViewById(R.id.ll_right_video);
@@ -78,8 +87,7 @@ public class RemovableView extends FrameLayout {
         rvPic=view.findViewById(R.id.rv_pic);
         llNormal=view.findViewById(R.id.rl_normal);
         imDrop=view.findViewById(R.id.im_drop);
-        ImageView image=view.findViewById(R.id.image);
-        image.setImageResource(R.mipmap.pic_blank);
+        rl_about=view.findViewById(R.id.rl_about);
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
             {
@@ -91,6 +99,8 @@ public class RemovableView extends FrameLayout {
                 radioPic.setChecked(false);
                 radioAbout.setVisibility(GONE);
                 radioAbout.setChecked(false);
+                radioInscription.setVisibility(GONE);
+                radioInscription.setChecked(false);
                 rvAudio.setVisibility(GONE);
                 rvPic.setVisibility(GONE);
                 llRightVideo.setVisibility(GONE);
@@ -104,6 +114,7 @@ public class RemovableView extends FrameLayout {
                 radioAudio.setVisibility(VISIBLE);
                 radioPic.setVisibility(VISIBLE);
                 radioAbout.setVisibility(VISIBLE);
+                radioInscription.setVisibility(VISIBLE);
                 imDrop.setBackgroundResource(R.mipmap.btn_dropup);
             }
         });
@@ -169,8 +180,23 @@ public class RemovableView extends FrameLayout {
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
                     break;
+                case R.id.radio_inscription:
+                    radioInscription.setChecked(true);
+                    rvAudio.setVisibility(GONE);
+                    llRightVideo.setVisibility(GONE);
+                    rvPic.setVisibility(GONE);
+                    Intent intent=new Intent(getContext(),ForgetPassActivity.class);
+                    getContext().startActivity(intent);
+                    break;
                 case R.id.radio_about:
                     radioAbout.setChecked(true);
+                    if (rl_about.getVisibility()==GONE)
+                    {
+//                        rl_about.setVisibility(VISIBLE);
+                    }
+                    rvAudio.setVisibility(GONE);
+                    llRightVideo.setVisibility(GONE);
+                    rvPic.setVisibility(GONE);
                     break;
             }
 
