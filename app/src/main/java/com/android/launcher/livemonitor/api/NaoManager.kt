@@ -2,6 +2,10 @@ package com.android.launcher.livemonitor.api
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.android.launcher.GsonUtil
+import com.android.launcher.LiveApplication
+import com.android.launcher.SharedPreferencesUtils
+import com.android.launcher.livemonitor.api.entity.User
 import com.android.launcher.livemonitor.common.BuildType
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -112,5 +116,13 @@ object NaoManager {
 
     fun <T> create(apiClass: Class<out T>): T {
         return retrofit.create(apiClass)
+    }
+
+    fun getAccessToken():HashMap<String,String>{
+        val userData = GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(LiveApplication.liveApplication, "userData", "").toString(), User.UserData::class.java)
+        var headerMap=HashMap<String,String>();
+        headerMap["Accept"] = "application/json"
+        headerMap["Authorization"] = "Bearer "+(userData?.access_token?:"")
+        return headerMap;
     }
 }

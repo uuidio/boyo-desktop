@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,8 +15,18 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.launcher.livemonitor.api.APIFactory;
+import com.android.launcher.livemonitor.api.NaoManager;
+import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
+import com.android.launcher.livemonitor.api.entity.PicImgRsp;
+import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.android.launcher.livemonitor.api.entity.User;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
+import com.google.gson.JsonElement;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -97,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         rl_user_info=findViewById(R.id.rl_user_info);
 
+        ceshi();
     }
 
     @Override
@@ -119,5 +131,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         unregisterReceiver(mAppChangeReceiver);
         super.onDestroy();
+    }
+
+    private void ceshi() {
+         APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),80)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<AutocueClassifyRsp>(){
+                    @Override
+                    public void accept(AutocueClassifyRsp rsp) throws Exception {
+
+                    }
+                });
     }
 }

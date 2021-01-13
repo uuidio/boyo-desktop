@@ -12,15 +12,25 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.launcher.C001Common;
 import com.android.launcher.ForgetPassActivity;
+import com.android.launcher.GsonUtil;
+import com.android.launcher.livemonitor.adapter.PicImgAdapter;
+import com.android.launcher.livemonitor.adapter.PicTypeAdapter;
+import com.android.launcher.livemonitor.api.APIFactory;
+import com.android.launcher.livemonitor.api.NaoManager;
+import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
+import com.android.launcher.livemonitor.api.entity.PicImgRsp;
+import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.camerakit.CameraKit;
 import com.camerakit.CameraKitView;
 import com.hotron.c002fac.tools.HotronJni;
@@ -33,24 +43,29 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created on 2020/12/3.
  *
  * @author Simon
  */
-public class RemovableView extends FrameLayout {
+public class RemovableView extends FrameLayout implements View.OnClickListener {
     private final Context mContext;
     private View view;
     private RadioGroup radioGroup;
     private RadioButton radioVideo, radioAudio, radioPic, radioAbout,radioInscription;
     private LinearLayout llBar;
 
-    private RelativeLayout llNormal,rl_about;
+    private RelativeLayout llNormal,rl_about,rl_imgku;
 
-    private RecyclerView rvAudio,rvPic;
+    private RecyclerView rvAudio,rvPic,rv_img_type,rv_img,rv_inscription;
 
     private LinearLayout llRightVideo;
     private ImageView imDrop;
+    private TextView tv_back,tv_submit;
 
     private int minTouchSlop=0;
     private float mDownX;
@@ -88,6 +103,14 @@ public class RemovableView extends FrameLayout {
         llNormal=view.findViewById(R.id.rl_normal);
         imDrop=view.findViewById(R.id.im_drop);
         rl_about=view.findViewById(R.id.rl_about);
+        rl_imgku=view.findViewById(R.id.rl_imgku);
+        rv_img_type=view.findViewById(R.id.rv_img_type);
+        rv_img=view.findViewById(R.id.rv_img);
+        tv_back=view.findViewById(R.id.tv_back);
+        tv_submit=view.findViewById(R.id.tv_submit);
+        rv_inscription=view.findViewById(R.id.rv_inscription);
+        tv_back.setOnClickListener(this);
+        tv_submit.setOnClickListener(this);
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
             {
@@ -123,11 +146,27 @@ public class RemovableView extends FrameLayout {
         AudioSelectAdapter audioSelectAdapter=new AudioSelectAdapter(getContext(),null);
         rvAudio.setAdapter(audioSelectAdapter);
 
+        //贴纸
         rvPic.setLayoutManager(new GridLayoutManager(getContext(),2));
-        PicAdapter picAdapter=new PicAdapter(getContext(),null);
+        PicAdapter picAdapter=new PicAdapter(getContext(),null, new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (position==0){
+                        rl_imgku.setVisibility(View.VISIBLE);
+                        rv_img_type.setVisibility(View.VISIBLE);
+                        tv_submit.setVisibility(View.GONE);
+                        //获取贴纸素材
+                        tagList();
+                    }
+            }
+        });
         rvPic.setAdapter(picAdapter);
 
+        rv_img_type.setLayoutManager(new GridLayoutManager(getContext(),4));
+        rv_img.setLayoutManager(new GridLayoutManager(getContext(),4));
 
+        //题词器
+        rv_img.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) llRightVideo.getLayoutParams();
@@ -157,6 +196,7 @@ public class RemovableView extends FrameLayout {
                     }
                     rvAudio.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
+                    rv_inscription.setVisibility(GONE);
                     break;
                 case R.id.radio_audio:
                     if (rvAudio.getVisibility()==View.GONE)
@@ -168,6 +208,7 @@ public class RemovableView extends FrameLayout {
                     }
                     llRightVideo.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
+                    rv_inscription.setVisibility(GONE);
                     break;
                 case R.id.radio_pic:
                     if (rvPic.getVisibility()==GONE)
@@ -176,17 +217,23 @@ public class RemovableView extends FrameLayout {
                         radioPic.setChecked(true);
                         params.width=425;
                         rvPic.setLayoutParams(params);
+                        //获取个人贴纸
+                        imgPeopleList();
                     }
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
+                    rv_inscription.setVisibility(GONE);
                     break;
                 case R.id.radio_inscription:
                     radioInscription.setChecked(true);
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
-                    Intent intent=new Intent(getContext(),ForgetPassActivity.class);
-                    getContext().startActivity(intent);
+                    if (rv_inscription.getVisibility()==View.GONE)
+                    {
+                        rv_inscription.setVisibility(VISIBLE);
+                        rv_inscription.setLayoutParams(params);
+                    }
                     break;
                 case R.id.radio_about:
                     radioAbout.setChecked(true);
@@ -197,6 +244,7 @@ public class RemovableView extends FrameLayout {
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
+                    rv_inscription.setVisibility(GONE);
                     break;
             }
 
@@ -314,5 +362,117 @@ public class RemovableView extends FrameLayout {
         int[] location=new int[2];
         getLocationOnScreen(location);
         return location[0]<100?true:false;
+    }
+
+    //获取贴纸素材分类
+    private void tagList() {
+        APIFactory.INSTANCE.create().tagList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<TagListRsp>(){
+                    @Override
+                    public void accept(TagListRsp tagListRsp) throws Exception {
+                        if (tagListRsp.getCode()==0){
+
+                            PicTypeAdapter picTypeAdapter=new PicTypeAdapter(getContext(), tagListRsp.getResult().getLists().getData(),
+                                    new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            rv_img_type.setVisibility(View.GONE);
+                                            tv_submit.setVisibility(View.VISIBLE);
+                                            rv_img.setVisibility(View.VISIBLE);
+                                            PicTypeAdapter adapter=(PicTypeAdapter)rv_img_type.getAdapter();
+                                            if (adapter!=null && adapter.getList()!=null){
+                                                imgList(adapter.getList().get(position).getId());
+                                            }
+                                        }
+                                    });
+                            rv_img_type.setAdapter(picTypeAdapter);
+                        }
+                    }
+                });
+    }
+
+
+    //获取贴纸素材图片
+    private void imgList(int tag_id) {
+        APIFactory.INSTANCE.create().imageList(NaoManager.INSTANCE.getAccessToken(),tag_id,Integer.MAX_VALUE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<PicImgRsp>(){
+                    @Override
+                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                        if (picImgRsp.getCode()==0){
+                            PicImgAdapter picImgAdapter=new PicImgAdapter(getContext(), picImgRsp.getResult().getLists().getData());
+                            rv_img_type.setAdapter(picImgAdapter);
+                        }
+                    }
+                });
+    }
+
+
+    //获取个人贴纸素材图片
+    private void imgPeopleList() {
+        APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<PicImgRsp>(){
+                    @Override
+                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                        if (picImgRsp.getCode()==0){
+                            PicAdapter picAdapter=new PicAdapter(getContext(),picImgRsp.getResult().getLists().getData(), new AdapterView.OnItemClickListener(){
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    if (position==0){
+                                        rl_imgku.setVisibility(View.VISIBLE);
+                                        rv_img_type.setVisibility(View.VISIBLE);
+                                        tv_submit.setVisibility(View.GONE);
+                                        //获取贴纸素材
+                                        tagList();
+                                    }else{
+                                        //TODO...贴纸使用....
+                                    }
+                                }
+                            });
+                            rvPic.setAdapter(picAdapter);
+                        }
+                    }
+                });
+    }
+
+
+    //获取题词分类列表
+    private void autocueClassifyList() {
+        APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<AutocueClassifyRsp>(){
+                    @Override
+                    public void accept(AutocueClassifyRsp rsp) throws Exception {
+                        if (rsp.getCode()==0){
+                           
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_back:
+                //关闭图库
+                if (rv_img.getVisibility()== View.VISIBLE){
+                    rv_img.setVisibility(View.GONE);
+                    tv_submit.setVisibility(View.GONE);
+                }else{
+                    rl_imgku.setVisibility(View.GONE);
+                    rv_img_type.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.tv_submit:
+
+                break;
+
+        }
     }
 }

@@ -31,7 +31,7 @@ public class MyFloatViewParama {
         layoutParams.gravity= Gravity.TOP | Gravity.START;
         layoutParams.x = x; // 起始坐标
         layoutParams.y = y;
-        layoutParams.width =  issub? 100 :WindowManager.LayoutParams.WRAP_CONTENT ;
+        layoutParams.width =  issub? 100 :WindowManager.LayoutParams.MATCH_PARENT ;
         layoutParams.height = issub? 100 : WindowManager.LayoutParams.WRAP_CONTENT;
     }
 

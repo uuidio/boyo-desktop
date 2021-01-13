@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_gravity="center_vertical"
     android:layout_height="wrap_content">
 
@@ -281,6 +281,95 @@
         android:layout_alignTop="@id/ll_bar"
         android:layout_marginLeft="@dimen/dp_15"
         android:layout_height="795px"/>
+
+    <!--图库-->
+    <RelativeLayout
+        android:id="@+id/rl_imgku"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/pic_bg_grey"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="90px"
+            android:background="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/btn_back_normal"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="返回"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20px"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="图库"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:id="@+id/tv_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="确定"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20px"
+            android:layout_marginTop="30px"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_img_type"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pic_bg_grey"
+            android:layout_marginTop="90px"
+            android:visibility="gone"
+        />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pic_bg_grey"
+            android:layout_marginTop="90px"
+            android:visibility="gone"
+            />
+
+
+
+    </RelativeLayout>
+
+
+
+    <!--提词器-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="425px"
+        android:layout_height="795px"
+        android:background="@drawable/bg_video"
+        android:id="@+id/rv_inscription"
+        android:layout_toRightOf="@id/ll_bar"
+        android:paddingBottom="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_15"
+        android:visibility="gone"
+        android:layout_marginTop="270px"
+        android:layout_alignTop="@id/ll_bar"
+        android:layout_marginLeft="@dimen/dp_15"
+       />
+
+
 
     <!--公告-->
     <RelativeLayout

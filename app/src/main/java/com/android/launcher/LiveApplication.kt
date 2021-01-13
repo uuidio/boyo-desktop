@@ -6,8 +6,12 @@ import com.android.launcher.livemonitor.common.BuildType
 import sm.utils.UtilsInitializer
 
 public class LiveApplication : Application() {
+    companion object{
+        var liveApplication:LiveApplication?=null;
+    }
     override fun onCreate() {
         super.onCreate()
+        liveApplication=this;
         NaoManager.init(this, BuildType.DEBUG)
         UtilsInitializer.init(this)
     }

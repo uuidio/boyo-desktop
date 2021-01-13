@@ -24,6 +24,14 @@
         android:id="@+id/im_reduce"
         android:layout_height="46px"/>
 
+    <ImageView
+        android:layout_width="46px"
+        android:background="@mipmap/pic_xiugai"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/im_update"
+        android:layout_height="46px"/>
+
 
 
 </RelativeLayout>

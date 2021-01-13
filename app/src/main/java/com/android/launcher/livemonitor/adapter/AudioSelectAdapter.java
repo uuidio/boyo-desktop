@@ -40,12 +40,29 @@ public class AudioSelectAdapter  extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         MyViewHolder myHolder= (MyViewHolder) holder;
-        myHolder.radioButton.setText("HDMI 1");
+        switch (position){
+            case 0:
+                myHolder.radioButton.setText("HDMI 1");
+                break;
+            case 1:
+                myHolder.radioButton.setText("HDMI 2");
+                break;
+            case 2:
+                myHolder.radioButton.setText("USB");
+                break;
+            case 3:
+                myHolder.radioButton.setText("Line ni");
+                break;
+            case 4:
+                myHolder.radioButton.setText("Mic in");
+                break;
+
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 5;
     }
 
     private static class MyViewHolder extends RecyclerView.ViewHolder
