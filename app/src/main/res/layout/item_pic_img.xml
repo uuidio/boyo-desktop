@@ -32,14 +32,8 @@
         android:layout_width="160px"
         android:layout_height="160px"
         android:layout_centerHorizontal="true"
-        android:visibility="visible">
-
-        <ImageView
-            android:layout_width="38px"
-            android:layout_height="38px"
-            android:layout_alignParentRight="true"
-            android:background="@mipmap/pic_ok"/>
-
+        android:layout_marginTop="@dimen/dp_10"
+        android:visibility="gone">
 
         <View
             android:layout_width="140px"
@@ -47,8 +41,15 @@
             android:scaleType="centerCrop"
             android:layout_marginTop="@dimen/dp_10"
             android:layout_centerHorizontal="true"
-            android:background="@color/grey"
+            android:background="#4Dffffff"
             />
+
+        <ImageView
+            android:layout_width="38px"
+            android:layout_height="38px"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@mipmap/pic_ok"/>
 
     </RelativeLayout>
 

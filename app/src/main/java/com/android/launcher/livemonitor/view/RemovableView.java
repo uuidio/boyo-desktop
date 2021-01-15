@@ -4,6 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.os.Build;
+import android.text.Html;
+import android.text.method.MovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,13 +29,17 @@ import android.widget.TextView;
 import com.android.launcher.C001Common;
 import com.android.launcher.ForgetPassActivity;
 import com.android.launcher.GsonUtil;
+import com.android.launcher.livemonitor.adapter.AutocueClassifyAdapter;
 import com.android.launcher.livemonitor.adapter.PicImgAdapter;
 import com.android.launcher.livemonitor.adapter.PicTypeAdapter;
 import com.android.launcher.livemonitor.api.APIFactory;
 import com.android.launcher.livemonitor.api.NaoManager;
+import com.android.launcher.livemonitor.api.entity.AboutRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
+import com.android.launcher.livemonitor.api.entity.AutocueRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
+import com.android.launcher.livemonitor.manager.WindowViewManager;
 import com.camerakit.CameraKit;
 import com.camerakit.CameraKitView;
 import com.hotron.c002fac.tools.HotronJni;
@@ -42,6 +51,9 @@ import com.hotron.c002fac.camera.CameraWrapper;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.AbstractCollection;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -59,13 +71,14 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     private RadioButton radioVideo, radioAudio, radioPic, radioAbout,radioInscription;
     private LinearLayout llBar;
 
-    private RelativeLayout llNormal,rl_about,rl_imgku;
+    private RelativeLayout llNormal,rl_about,rl_imgku,rl_books;
 
     private RecyclerView rvAudio,rvPic,rv_img_type,rv_img,rv_inscription;
 
     private LinearLayout llRightVideo;
-    private ImageView imDrop;
-    private TextView tv_back,tv_submit;
+    private ImageView imDrop,iv_books;
+    private TextView tv_back,tv_submit,tv_about,tv_books_tag1,tv_books_tag2,tv_books_tag3,tv_books_content,tv_page_num,tv_books_title;
+    private Button btn_books_narrow,btn_books_close,btn_pre_page,btn_next_page;
 
     private int minTouchSlop=0;
     private float mDownX;
@@ -109,8 +122,11 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         tv_back=view.findViewById(R.id.tv_back);
         tv_submit=view.findViewById(R.id.tv_submit);
         rv_inscription=view.findViewById(R.id.rv_inscription);
+        tv_about=view.findViewById(R.id.tv_about);
+
         tv_back.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
+
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
             {
@@ -127,6 +143,8 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 rvAudio.setVisibility(GONE);
                 rvPic.setVisibility(GONE);
                 llRightVideo.setVisibility(GONE);
+                rv_inscription.setVisibility(GONE);
+                rl_about.setVisibility(GONE);
                 imDrop.setBackgroundResource(R.mipmap.btn_dropdpwn);
 
                 RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(110, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -166,9 +184,25 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         rv_img.setLayoutManager(new GridLayoutManager(getContext(),4));
 
         //题词器
-        rv_img.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        rv_inscription.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false){
+            @Override
+            public boolean canScrollVertically() {
+                return true;
+            }
+        });
 
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+
+        radioVideo.setOnClickListener(radioClicklistener);
+        radioAudio.setOnClickListener(radioClicklistener);
+        radioPic.setOnClickListener(radioClicklistener);
+        radioInscription.setOnClickListener(radioClicklistener);
+        radioAbout.setOnClickListener(radioClicklistener);
+
+    }
+
+    private OnClickListener radioClicklistener=new OnClickListener() {
+        @Override
+        public void onClick(View v) {
             RelativeLayout.LayoutParams params= (RelativeLayout.LayoutParams) llRightVideo.getLayoutParams();
             RelativeLayout.LayoutParams llp=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             if (!isLeft())
@@ -177,26 +211,34 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 llBar.setLayoutParams(llp);
                 params.removeRule(RelativeLayout.RIGHT_OF);
                 params.rightMargin=10;
+                params.topMargin=60;
                 params.addRule(RelativeLayout.LEFT_OF,R.id.ll_bar);
             }else {
                 llp.addRule(RelativeLayout.ALIGN_PARENT_LEFT,RelativeLayout.TRUE);
                 llBar.setLayoutParams(llp);
                 params.removeRule(RelativeLayout.LEFT_OF);
                 params.leftMargin=10;
+                params.topMargin=60;
                 params.addRule(RelativeLayout.RIGHT_OF,R.id.ll_bar);
             }
 
-            switch (checkedId) {
+            switch (v.getId()) {
                 case R.id.radio_video:
                     if (llRightVideo.getVisibility() == View.GONE) {
                         llRightVideo.setVisibility(VISIBLE);
                         radioVideo.setChecked(true);
                         params.width=318;
+                        params.height=RelativeLayout.LayoutParams.WRAP_CONTENT;
                         llRightVideo.setLayoutParams(params);
+                    }else{
+                        radioVideo.setChecked(false);
+                        llRightVideo.setVisibility(GONE);
+                        radioGroup.clearCheck();
                     }
                     rvAudio.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
                     rv_inscription.setVisibility(GONE);
+                    rl_about.setVisibility(GONE);
                     break;
                 case R.id.radio_audio:
                     if (rvAudio.getVisibility()==View.GONE)
@@ -204,11 +246,17 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                         rvAudio.setVisibility(VISIBLE);
                         radioAudio.setChecked(true);
                         params.width=318;
+                        params.height=RelativeLayout.LayoutParams.WRAP_CONTENT;
                         rvAudio.setLayoutParams(params);
+                    }else{
+                        rvAudio.setVisibility(GONE);
+                        radioAudio.setChecked(false);
+                        radioGroup.clearCheck();
                     }
                     llRightVideo.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
                     rv_inscription.setVisibility(GONE);
+                    rl_about.setVisibility(GONE);
                     break;
                 case R.id.radio_pic:
                     if (rvPic.getVisibility()==GONE)
@@ -216,30 +264,58 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                         rvPic.setVisibility(VISIBLE);
                         radioPic.setChecked(true);
                         params.width=425;
+                        params.height=795;
                         rvPic.setLayoutParams(params);
+                        ((PicAdapter)rvPic.getAdapter()).reset();
                         //获取个人贴纸
                         imgPeopleList();
+                    }else{
+                        rvPic.setVisibility(GONE);
+                        radioPic.setChecked(false);
+                        radioGroup.clearCheck();
                     }
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
                     rv_inscription.setVisibility(GONE);
+                    rl_about.setVisibility(GONE);
                     break;
                 case R.id.radio_inscription:
-                    radioInscription.setChecked(true);
+                    if (rv_inscription.getVisibility()==View.GONE)
+                    {
+                        rv_inscription.setAdapter(null);
+                        rv_inscription.setVisibility(VISIBLE);
+                        radioInscription.setChecked(true);
+                        params.width=425;
+                        params.height=795;
+                        params.topMargin=270;
+                        rv_inscription.setLayoutParams(params);
+                        autocueClassifyList();
+                    }else{
+                        rv_inscription.setVisibility(GONE);
+                        radioInscription.setChecked(false);
+                        radioGroup.clearCheck();
+                    }
+
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
                     rvPic.setVisibility(GONE);
-                    if (rv_inscription.getVisibility()==View.GONE)
-                    {
-                        rv_inscription.setVisibility(VISIBLE);
-                        rv_inscription.setLayoutParams(params);
-                    }
+                    rl_about.setVisibility(GONE);
                     break;
                 case R.id.radio_about:
-                    radioAbout.setChecked(true);
                     if (rl_about.getVisibility()==GONE)
                     {
-//                        rl_about.setVisibility(VISIBLE);
+                        rl_about.setVisibility(VISIBLE);
+                        radioAbout.setChecked(true);
+                        params.width=490;
+                        params.height=590;
+                        params.topMargin=290;
+                        rl_about.setLayoutParams(params);
+                        //获取公告
+                        notice();
+                    }else{
+                        rl_about.setVisibility(GONE);
+                        radioAbout.setChecked(false);
+                        radioGroup.clearCheck();
                     }
                     rvAudio.setVisibility(GONE);
                     llRightVideo.setVisibility(GONE);
@@ -247,10 +323,8 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                     rv_inscription.setVisibility(GONE);
                     break;
             }
-
-        });
-
-    }
+        }
+    };
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -286,6 +360,10 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 float dy = event.getY() - mDownY;
                 // 根据滑动的距离来判断是否是拖动操作
                 interceptd =   Math.abs(dx) > minTouchSlop || Math.abs(dy) > minTouchSlop  ;
+                if (radioVideo.getVisibility()==VISIBLE)
+                {
+                    interceptd=false;
+                }
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -321,28 +399,28 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             case MotionEvent.ACTION_DOWN:
                 //todo 因为 ViewGroup 中有 子View 被挡触摸时， ViewGroup ACTION_DOWN 没法被
                 // 触发，所以为了确保触发，要在 onInterceptTouchEvent ACTION_DOWN 中进行初始化。
-                myFloatViewParama.setX( (int) event.getRawX());
+//                myFloatViewParama.setX( (int) event.getRawX());
                 myFloatViewParama.setY((int) event.getRawY());
                 break;
             case MotionEvent.ACTION_MOVE:
                 int nowX = (int) event.getRawX();
                 int nowY = (int) event.getRawY();
-                int movedX = nowX -  myFloatViewParama.getX();
+//                int movedX = nowX -  myFloatViewParama.getX();
                 int movedY = nowY -  myFloatViewParama.getY();
-                myFloatViewParama.setX( nowX );
+//                myFloatViewParama.setX( nowX );
                 myFloatViewParama.setY( nowY );
-                myFloatViewParama.getLayoutParams().x = myFloatViewParama.getLayoutParams().x + movedX;
+//                myFloatViewParama.getLayoutParams().x = myFloatViewParama.getLayoutParams().x + movedX;
                 myFloatViewParama.getLayoutParams().y = myFloatViewParama.getLayoutParams().y + movedY;
                 // 更新悬浮窗控件布局
                 windowManager.updateViewLayout(this, myFloatViewParama.getLayoutParams());
                 break;
             case MotionEvent.ACTION_UP:
-                if (myFloatViewParama.getLayoutParams().x<540)
-                {
-                    myFloatViewParama.getLayoutParams().x=10;
-                }else {
-                    myFloatViewParama.getLayoutParams().x=1070;
-                }
+//                if (myFloatViewParama.getLayoutParams().x<540)
+//                {
+//                    myFloatViewParama.getLayoutParams().x=10;
+//                }else {
+//                    myFloatViewParama.getLayoutParams().x=1070;
+//                }
                 windowManager.updateViewLayout(this, myFloatViewParama.getLayoutParams());
                 performClick(); // 消除警告
                 break;
@@ -366,7 +444,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
 
     //获取贴纸素材分类
     private void tagList() {
-        APIFactory.INSTANCE.create().tagList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+        APIFactory.INSTANCE.create().tagList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<TagListRsp>(){
@@ -380,6 +458,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                             rv_img_type.setVisibility(View.GONE);
                                             tv_submit.setVisibility(View.VISIBLE);
+                                            rv_img.setAdapter(null);
                                             rv_img.setVisibility(View.VISIBLE);
                                             PicTypeAdapter adapter=(PicTypeAdapter)rv_img_type.getAdapter();
                                             if (adapter!=null && adapter.getList()!=null){
@@ -396,7 +475,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
 
     //获取贴纸素材图片
     private void imgList(int tag_id) {
-        APIFactory.INSTANCE.create().imageList(NaoManager.INSTANCE.getAccessToken(),tag_id,Integer.MAX_VALUE)
+        APIFactory.INSTANCE.create().imageList(NaoManager.INSTANCE.getAccessToken(),tag_id,3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<PicImgRsp>(){
@@ -404,7 +483,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                     public void accept(PicImgRsp picImgRsp) throws Exception {
                         if (picImgRsp.getCode()==0){
                             PicImgAdapter picImgAdapter=new PicImgAdapter(getContext(), picImgRsp.getResult().getLists().getData());
-                            rv_img_type.setAdapter(picImgAdapter);
+                            rv_img.setAdapter(picImgAdapter);
                         }
                     }
                 });
@@ -413,7 +492,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
 
     //获取个人贴纸素材图片
     private void imgPeopleList() {
-        APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+        APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<PicImgRsp>(){
@@ -425,6 +504,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     if (position==0){
                                         rl_imgku.setVisibility(View.VISIBLE);
+                                        rv_img_type.setAdapter(null);
                                         rv_img_type.setVisibility(View.VISIBLE);
                                         tv_submit.setVisibility(View.GONE);
                                         //获取贴纸素材
@@ -443,14 +523,67 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
 
     //获取题词分类列表
     private void autocueClassifyList() {
-        APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+        APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<AutocueClassifyRsp>(){
                     @Override
                     public void accept(AutocueClassifyRsp rsp) throws Exception {
                         if (rsp.getCode()==0){
-                           
+                            AutocueClassifyAdapter adapter=new AutocueClassifyAdapter(getContext(), rsp.getResult().getLists().getData(), new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        showBooksView();
+                                        autocueList(rsp.getResult().getLists().getData().get(position).getId());
+                                }
+                            });
+                            rv_inscription.setAdapter(adapter);
+                        }
+                    }
+                });
+    }
+
+
+    //获取题词笔记列表
+    private List<AutocueRsp.Data> booksData;//笔记数据
+    private int bookIndex=-1;//当前笔记下标
+    private void autocueList(int cid) {
+        APIFactory.INSTANCE.create().autocueList(NaoManager.INSTANCE.getAccessToken(),cid,3000)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<AutocueRsp>(){
+                    @Override
+                    public void accept(AutocueRsp rsp) throws Exception {
+                        if (rsp.getCode()==0){
+                            booksData=rsp.getResult().getLists().getData();
+                            if (booksData!=null && booksData.size()>0){
+                                bookIndex=0;
+                                tv_books_title.setText(booksData.get(bookIndex).getTitle());
+                                tv_books_tag1.setText(booksData.get(bookIndex).getAntistop_one());
+                                tv_books_tag2.setText(booksData.get(bookIndex).getAntistop_two());
+                                tv_books_tag3.setText(booksData.get(bookIndex).getAntistop_three());
+                                tv_books_content.setText(booksData.get(bookIndex).getContent());
+                                tv_page_num.setText((bookIndex+1)+"/"+booksData.size());
+                            }
+                        }
+                    }
+                });
+    }
+
+
+
+    //获取公告
+    private void notice() {
+        APIFactory.INSTANCE.create().notice(NaoManager.INSTANCE.getAccessToken())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<AboutRsp>(){
+                    @Override
+                    public void accept(AboutRsp rsp) throws Exception {
+                        if (rsp.getCode()==0){
+                            String html="<h5><font color='#FFFFFF' >"+rsp.getResult().getTitle()+"</font></h5>"
+                                    +rsp.getResult().getNotice();
+                            tv_about.setText(Html.fromHtml(html));
                         }
                     }
                 });
@@ -463,6 +596,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 //关闭图库
                 if (rv_img.getVisibility()== View.VISIBLE){
                     rv_img.setVisibility(View.GONE);
+                    rv_img_type.setVisibility(View.VISIBLE);
                     tv_submit.setVisibility(View.GONE);
                 }else{
                     rl_imgku.setVisibility(View.GONE);
@@ -470,9 +604,104 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 }
                 break;
             case R.id.tv_submit:
+                //跳转调整页面
 
                 break;
+            case R.id.btn_pre_page:
+                //笔记上一页
+                if (booksData!=null && booksData.size()>bookIndex-1 && bookIndex-1>=0){
+                    bookIndex--;
+                    tv_books_title.setText(booksData.get(bookIndex).getTitle());
+                    tv_books_tag1.setText(booksData.get(bookIndex).getAntistop_one());
+                    tv_books_tag2.setText(booksData.get(bookIndex).getAntistop_two());
+                    tv_books_tag3.setText(booksData.get(bookIndex).getAntistop_three());
+                    tv_books_content.setText(booksData.get(bookIndex).getContent());
+                    tv_page_num.setText((bookIndex+1)+"/"+booksData.size());
+                }
+                break;
+            case R.id.btn_next_page:
+                //笔记下一页
+                if (booksData!=null && booksData.size()>bookIndex+1){
+                    bookIndex++;
+                    tv_books_title.setText(booksData.get(bookIndex).getTitle());
+                    tv_books_tag1.setText(booksData.get(bookIndex).getAntistop_one());
+                    tv_books_tag2.setText(booksData.get(bookIndex).getAntistop_two());
+                    tv_books_tag3.setText(booksData.get(bookIndex).getAntistop_three());
+                    tv_books_content.setText(booksData.get(bookIndex).getContent());
+                    tv_page_num.setText((bookIndex+1)+"/"+booksData.size());
+                }
+                break;
+            case R.id.btn_books_close:
+                //关闭笔记
+                dismissFloatBooks();
 
+                break;
+            case R.id.btn_books_narrow:
+                //笔记缩小
+                if (floatBooks!=null){
+                    rl_books.setVisibility(View.GONE);
+                    iv_books.setVisibility(View.VISIBLE);
+                }
+
+                break;
+            case R.id.iv_books:
+                //笔记张开
+                if (floatBooks!=null){
+                    iv_books.setVisibility(View.GONE);
+                    rl_books.setVisibility(View.VISIBLE);
+                }
+                break;
+
+        }
+    }
+
+
+    //添加笔记界面
+    private View floatBooks;
+    public void showBooksView(){
+        if (floatBooks==null){
+            floatBooks=WindowViewManager.getViewManagerInstance().floatBooks;
+            RightFloatViewParama rightFloatViewParama = new RightFloatViewParama(10, 300);
+            tv_books_tag1=floatBooks.findViewById(R.id.tv_books_tag1);
+            tv_books_tag2=floatBooks.findViewById(R.id.tv_books_tag2);
+            tv_books_tag3=floatBooks.findViewById(R.id.tv_books_tag3);
+            tv_books_content=floatBooks.findViewById(R.id.tv_books_content);
+            tv_books_title=floatBooks.findViewById(R.id.tv_books_title);
+            tv_page_num=floatBooks.findViewById(R.id.tv_page_num);
+            btn_books_narrow=floatBooks.findViewById(R.id.btn_books_narrow);
+            btn_books_close=floatBooks.findViewById(R.id.btn_books_close);
+            btn_pre_page=floatBooks.findViewById(R.id.btn_pre_page);
+            btn_next_page=floatBooks.findViewById(R.id.btn_next_page);
+            iv_books=floatBooks.findViewById(R.id.iv_books);
+            rl_books=floatBooks.findViewById(R.id.rl_books);
+            tv_books_content.setMovementMethod(ScrollingMovementMethod.getInstance());
+            btn_books_narrow.setOnClickListener(this);
+            btn_books_close.setOnClickListener(this);
+            iv_books.setOnClickListener(this);
+            btn_pre_page.setOnClickListener(this);
+            btn_next_page.setOnClickListener(this);
+            windowManager.addView(floatBooks, rightFloatViewParama.getLayoutParams());
+        }else{
+            tv_books_title.setText("");
+            tv_books_tag1.setText("");
+            tv_books_tag2.setText("");
+            tv_books_tag3.setText("");
+            tv_page_num.setText("0/0");
+            tv_books_content.setText("");
+            floatBooks.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    public void dismissFloatBooks(){
+        if (floatBooks!=null){
+            floatBooks.setVisibility(View.GONE);
+            tv_books_title.setText("");
+            tv_books_tag1.setText("");
+            tv_books_tag2.setText("");
+            tv_books_tag3.setText("");
+            tv_page_num.setText("0/0");
+            tv_books_content.setText("");
         }
     }
 }

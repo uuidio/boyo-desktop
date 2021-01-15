@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_gravity="center_vertical"
     android:layout_height="wrap_content">
 
@@ -117,7 +117,6 @@
     <LinearLayout
         android:layout_width="317px"
         android:id="@+id/ll_right_video"
-
         android:layout_toRightOf="@id/ll_bar"
         android:layout_marginLeft="37px"
         android:paddingLeft="22px"
@@ -288,6 +287,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/pic_bg_grey"
+        android:clickable="true"
         android:visibility="gone">
 
         <View
@@ -352,6 +352,128 @@
 
     </RelativeLayout>
 
+    <!--贴纸调整-->
+    <RelativeLayout
+        android:id="@+id/rl_pic_adjust"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/pic_bg_grey"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="90px"
+            android:background="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_pic_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/btn_back_normal"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="返回"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20px"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="贴纸调整(可拖动)"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:layout_marginTop="30px"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_pic_bg"
+            android:layout_width="761px"
+            android:layout_height="1353px"
+            android:layout_centerHorizontal="true"
+            android:background="@color/black"
+            android:layout_marginTop="97px">
+
+        <ImageView
+            android:layout_width="270px"
+            android:scaleType="centerCrop"
+            android:id="@+id/iv_pic_image"
+            android:layout_centerInParent="true"
+            android:layout_height="270px"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:textColor="@color/black"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="77px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:text="快速调整"/>
+
+        <Button
+            android:id="@+id/btn_pic_resize"
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="原始大小"
+            android:layout_marginLeft="270px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+
+        <Button
+            android:id="@+id/btn_pic_roation"
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="旋转"
+            android:layout_marginLeft="600px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+
+        <Button
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="旋转"
+            android:layout_marginLeft="600px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+
+        <Button
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="旋转"
+            android:layout_marginLeft="600px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+    </RelativeLayout>
+
 
 
     <!--提词器-->
@@ -361,10 +483,14 @@
         android:background="@drawable/bg_video"
         android:id="@+id/rv_inscription"
         android:layout_toRightOf="@id/ll_bar"
-        android:paddingBottom="@dimen/dp_15"
-        android:paddingTop="@dimen/dp_15"
+        android:paddingBottom="20px"
+        android:paddingTop="50px"
+        android:paddingLeft="20px"
+        android:paddingRight="20px"
         android:visibility="gone"
         android:layout_marginTop="270px"
+        android:clickable="true"
+        android:scrollbars="vertical"
         android:layout_alignTop="@id/ll_bar"
         android:layout_marginLeft="@dimen/dp_15"
        />
@@ -374,9 +500,20 @@
     <!--公告-->
     <RelativeLayout
         android:id="@+id/rl_about"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="490px"
+        android:layout_height="590px"
+        android:layout_toRightOf="@id/ll_bar"
+        android:padding="20px"
+        android:layout_marginTop="270px"
+        android:layout_alignTop="@id/ll_bar"
+        android:background="@drawable/bg_video"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
 
     </RelativeLayout>
 </RelativeLayout>

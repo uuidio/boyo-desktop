@@ -52,7 +52,7 @@
         />
 
     <EditText
-        android:id="@+id/code"
+        android:id="@+id/et_code"
         android:layout_width="1008px"
         android:layout_height="160px"
         android:paddingLeft="59px"
@@ -130,7 +130,7 @@
     <Button
         android:layout_width="1005px"
         android:layout_height="132px"
-        android:id="@+id/btn_login"
+        android:id="@+id/btn_sumbit"
         android:text="提交"
         android:textColor="@color/white"
         android:gravity="center"
@@ -143,7 +143,14 @@
 
 
 
-
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="150px"
+        android:layout_height="150px"
+        android:layout_centerInParent="true"
+        android:tooltipText="加载中..."
+        android:visibility="gone"
+        />
 
 
 

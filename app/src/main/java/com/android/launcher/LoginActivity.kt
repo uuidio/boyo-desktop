@@ -30,6 +30,9 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btn_login.setOnClickListener {
+            if (progress.visibility == View.VISIBLE){
+                return@setOnClickListener
+            }
             progress.visibility= View.VISIBLE
             login()
         }

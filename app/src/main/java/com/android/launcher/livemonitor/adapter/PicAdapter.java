@@ -51,6 +51,8 @@ public class PicAdapter extends RecyclerView.Adapter {
          if (position==0)
          {
              viewHolder.image.setBackgroundResource(R.drawable.bg_pic_add);
+             viewHolder.reduce.setVisibility(View.GONE);
+             viewHolder.update.setVisibility(View.GONE);
          }else {
              Glide.with(context).load(list.get(position).getImg()).into(viewHolder.image);
          }
@@ -83,9 +85,9 @@ public class PicAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         if (list!=null){
-            return list.size();
+            return list.size()+1;
         }
-        return 0;
+        return 1;
     }
 
     private static class MyViewHolder extends RecyclerView.ViewHolder
@@ -120,7 +122,7 @@ public class PicAdapter extends RecyclerView.Adapter {
 
     //获取个人贴纸素材图片
     private void imgPeopleList() {
-        APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),Integer.MAX_VALUE)
+        APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<PicImgRsp>(){
@@ -132,5 +134,11 @@ public class PicAdapter extends RecyclerView.Adapter {
                         }
                     }
                 });
+    }
+
+    //重置数据
+    public void reset(){
+        list=null;
+        notifyDataSetChanged();
     }
 }

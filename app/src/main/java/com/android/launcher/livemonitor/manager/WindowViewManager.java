@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.android.launcher.R;
 import com.android.launcher.livemonitor.view.MyFloatViewParama;
 import com.android.launcher.livemonitor.view.RemovableView;
 
@@ -23,6 +24,7 @@ public class WindowViewManager {
     private static WindowViewManager viewManager;
     private WindowManager windowManager;
     private RemovableView floatBall;
+    public View floatBooks;
     private boolean ismove;
     private boolean isShow = false;
     private static Vibrator sVibrator;
@@ -44,6 +46,7 @@ public class WindowViewManager {
         }
         sVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         floatBall = new RemovableView(context.getApplicationContext(),null);
+        floatBooks=View.inflate(context.getApplicationContext(), R.layout.view_float_autocue,null);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -72,6 +75,9 @@ public class WindowViewManager {
     public void close() {
         if (isShow) {
             windowManager.removeView(floatBall);
+            try {
+                windowManager.removeView(floatBooks);
+            }catch (Exception e){}
             isShow = false;
         }
     }

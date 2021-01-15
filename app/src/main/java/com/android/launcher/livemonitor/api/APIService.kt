@@ -48,6 +48,22 @@ interface APIService {
     @GET("/live/v1/autocue/list")
     fun autocueList(@HeaderMap headerMap:HashMap<String,String>,@Query("cid") cid:Int,@Query("per_page") per_page:Int): Observable<AutocueRsp>
 
+    //公告
+    @GET("/live/v1/notice/get")
+    fun notice(@HeaderMap headerMap:HashMap<String,String>): Observable<AboutRsp>
+
+
+    //发送手机验证码
+    @FormUrlEncoded
+    @POST("/live/v1/anchor/code")
+    fun anchorCode(@Field("mobile") mobile:String): Observable<SendCodeRsp>
+
+    //验证码重置密码
+    @FormUrlEncoded
+    @POST("/live/v1/anchor/resetPwd")
+    fun anchorResetPwd(@Field("mobile") mobile:String,@Field("password") password:String,@Field("code") code:String): Observable<SendCodeRsp>
+
+
 
 }
 

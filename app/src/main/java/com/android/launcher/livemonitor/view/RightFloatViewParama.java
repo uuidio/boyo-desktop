@@ -4,18 +4,16 @@ import android.graphics.PixelFormat;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 /**
  *  悬浮控件的参数
  */
-public class MyFloatViewParama {
+public class RightFloatViewParama {
     private int x;
     private int y;
     private WindowManager.LayoutParams layoutParams ;
 
-    public MyFloatViewParama(int x, int y  , boolean issub) {
+    public RightFloatViewParama(int x, int y) {
         this.x = x;
         this.y = y;
 
@@ -30,11 +28,11 @@ public class MyFloatViewParama {
             layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
 
-        layoutParams.gravity= Gravity.TOP | Gravity.START;
+        layoutParams.gravity= Gravity.TOP | Gravity.END;
         layoutParams.x = x; // 起始坐标
         layoutParams.y = y;
-        layoutParams.width =  issub? 100 :WindowManager.LayoutParams.WRAP_CONTENT ;
-        layoutParams.height = issub? 100 : WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT ;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
     }
 
     public int getX() {

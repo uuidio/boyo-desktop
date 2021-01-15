@@ -14,5 +14,6 @@
 
 
     <color name="pic_bg_grey">#D8D8D8</color>
+    <color name="text_grey">#C2C2C2</color>
     <color name="blue">#03A9F4</color>
 </resources>
