@@ -24,7 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.launcher.C001Common;
 import com.android.launcher.ForgetPassActivity;
@@ -39,6 +41,7 @@ import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
+import com.android.launcher.livemonitor.common.ToastUtils;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
 import com.camerakit.CameraKit;
 import com.camerakit.CameraKitView;
@@ -56,8 +59,10 @@ import java.util.AbstractCollection;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import me.leefeng.promptlibrary.PromptDialog;
 
 /**
  * Created on 2020/12/3.
@@ -71,14 +76,17 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     private RadioButton radioVideo, radioAudio, radioPic, radioAbout,radioInscription;
     private LinearLayout llBar;
 
-    private RelativeLayout llNormal,rl_about,rl_imgku,rl_books;
+    private RelativeLayout llNormal,rl_about,rl_imgku,rl_books,rl_pic_adjust,rl_pic_bg,rl_loading_dialog;
 
     private RecyclerView rvAudio,rvPic,rv_img_type,rv_img,rv_inscription;
 
     private LinearLayout llRightVideo;
-    private ImageView imDrop,iv_books;
-    private TextView tv_back,tv_submit,tv_about,tv_books_tag1,tv_books_tag2,tv_books_tag3,tv_books_content,tv_page_num,tv_books_title;
-    private Button btn_books_narrow,btn_books_close,btn_pre_page,btn_next_page;
+    private ImageView imDrop,iv_books,iv_pic_image;
+    private TextView tv_back,tv_submit,tv_about,tv_books_tag1,tv_books_tag2,
+            tv_books_tag3,tv_books_content,tv_page_num,tv_books_title,tv_pic_back;
+    private Button btn_books_narrow,btn_books_close,btn_pre_page,btn_next_page,
+            btn_pic_resize,btn_pic_roation,btn_pic_reset,btn_pic_submit;
+    private SeekBar seekbar_pic;
 
     private int minTouchSlop=0;
     private float mDownX;
@@ -123,9 +131,24 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         tv_submit=view.findViewById(R.id.tv_submit);
         rv_inscription=view.findViewById(R.id.rv_inscription);
         tv_about=view.findViewById(R.id.tv_about);
+        rl_pic_adjust=view.findViewById(R.id.rl_pic_adjust);
+        iv_pic_image=view.findViewById(R.id.iv_pic_image);
+        tv_pic_back=view.findViewById(R.id.tv_pic_back);
+        btn_pic_resize=view.findViewById(R.id.btn_pic_resize);
+        btn_pic_roation=view.findViewById(R.id.btn_pic_roation);
+        btn_pic_reset=view.findViewById(R.id.btn_pic_reset);
+        btn_pic_submit=view.findViewById(R.id.btn_pic_submit);
+        seekbar_pic=view.findViewById(R.id.seekbar_pic);
+        rl_pic_bg=view.findViewById(R.id.rl_pic_bg);
+        rl_loading_dialog=view.findViewById(R.id.rl_loading_dialog);
 
         tv_back.setOnClickListener(this);
         tv_submit.setOnClickListener(this);
+        tv_pic_back.setOnClickListener(this);
+        btn_pic_resize.setOnClickListener(this);
+        btn_pic_roation.setOnClickListener(this);
+        btn_pic_reset.setOnClickListener(this);
+        btn_pic_submit.setOnClickListener(this);
 
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
@@ -521,6 +544,37 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     }
 
 
+    //添加贴纸素材图片
+    private void imagePeopleSave(int tag_id,String location) {
+        rl_loading_dialog.setVisibility(View.VISIBLE);
+        APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),tag_id,1,location)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<PicImgRsp>() {
+                    @Override
+                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                        if (picImgRsp.getCode() == 0 ) {
+                            if (rvPic.getVisibility() == View.VISIBLE)
+                                imgPeopleList();
+                        }else{
+                            ToastUtils.showLong(picImgRsp.getMessage());
+
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ToastUtils.showLong("网络错误!");
+                        rl_loading_dialog.setVisibility(View.GONE);
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        rl_loading_dialog.setVisibility(View.GONE);
+                    }
+                });
+    }
+
     //获取题词分类列表
     private void autocueClassifyList() {
         APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),3000)
@@ -604,8 +658,50 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 }
                 break;
             case R.id.tv_submit:
-                //跳转调整页面
-
+                //跳转贴纸调整页面
+                if (rv_img.getAdapter()!=null){
+                    PicImgAdapter adapter= (PicImgAdapter)rv_img.getAdapter();
+                   if (adapter.getCurrySel()>-1 && !adapter.getAdapterData().isEmpty()){
+                       //打开调整界面
+                       openPicAdjust(adapter.getAdapterData().get(adapter.getCurrySel()));
+                   }
+                }
+                break;
+            case R.id.tv_pic_back:
+                //退出贴纸调整页面
+                rl_pic_adjust.setVisibility(View.GONE);
+                break;
+            case R.id.btn_pic_roation:
+                //贴纸旋转
+                iv_pic_image.setRotation(iv_pic_image.getRotation()+90f);
+                break;
+            case R.id.btn_pic_resize:
+                //贴纸重置大小
+                ViewGroup.LayoutParams params=  iv_pic_image.getLayoutParams();
+                params.width=270;
+                params.height=270;
+                iv_pic_image.setLayoutParams(params);
+                break;
+            case R.id.btn_pic_reset:
+                //贴纸重置大小
+                RelativeLayout.LayoutParams resetParams= (RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
+                resetParams.width=270;
+                resetParams.height=270;
+                resetParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                iv_pic_image.setLayoutParams(resetParams);
+                iv_pic_image.requestLayout();
+                break;
+            case R.id.btn_pic_submit:
+                //贴纸添加
+                PicImgAdapter adapter= (PicImgAdapter)rv_img.getAdapter();
+                PicImgRsp.Location location=adapter.getAdapterData().get(adapter.getCurrySel()).getLocation();
+                location.setWidth(iv_pic_image.getWidth());
+                location.setHeight(iv_pic_image.getHeight());
+                location.setLeftPer(iv_pic_image.getLeft()/rl_pic_bg.getWidth());
+                location.setRoate(iv_pic_image.getRotation());
+                location.setTopPer(iv_pic_image.getTop()/rl_pic_bg.getHeight());
+                imagePeopleSave(adapter.getAdapterData().get(adapter.getCurrySel()).getId()
+                ,GsonUtil.gsonString(location));
                 break;
             case R.id.btn_pre_page:
                 //笔记上一页
@@ -653,6 +749,12 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 break;
 
         }
+    }
+
+    //打开调整贴纸界面
+
+    private void openPicAdjust(PicImgRsp.Data data){
+        rl_pic_adjust.setVisibility(View.VISIBLE);
     }
 
 

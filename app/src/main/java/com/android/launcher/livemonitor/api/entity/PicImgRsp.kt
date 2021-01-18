@@ -31,9 +31,9 @@ data class PicImgRsp(
     )
 
     data class Location(
-            var top: Int,
-            var left: Int,
-            var roate: Int,
+            var topPer: Float=0f,
+            var leftPer: Float=0f,
+            var roate: Float=0f,
             var width: Int,
             var height: Int
     )

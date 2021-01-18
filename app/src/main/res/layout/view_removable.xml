@@ -359,6 +359,7 @@
         android:layout_height="match_parent"
         android:background="@color/pic_bg_grey"
         android:clickable="true"
+        android:clipChildren="false"
         android:visibility="gone">
 
         <View
@@ -438,36 +439,94 @@
             android:textSize="34px"
             android:textColor="@color/white"
             android:text="旋转"
-            android:layout_marginLeft="600px"
+            android:layout_marginLeft="700px"
             android:layout_marginTop="45px"
             android:layout_below="@+id/rl_pic_bg"
             android:background="@drawable/bg_pic_adjust_blue"
             />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:textColor="@color/black"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="200px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:text="贴纸大小"/>
+
+        <SeekBar
+            android:id="@+id/seekbar_pic"
+            android:layout_width="650px"
+            android:layout_height="30px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:layout_marginLeft="270px"
+            android:layout_marginTop="205px"
+            android:paddingStart="0px"
+            android:paddingEnd="0px"
+            android:splitTrack="false"
+            android:progressDrawable="@drawable/progressbar_color"
+            android:thumb="@drawable/shape_circle_blue"
+            android:progress="50"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_alignLeft="@id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="0%"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_marginLeft="305px"
+            android:layout_alignLeft="@+id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="100%"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_alignRight="@id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="200%"/>
 
         <Button
-            android:layout_width="250px"
+            android:id="@+id/btn_pic_reset"
+            android:layout_width="350px"
             android:layout_height="100px"
             android:gravity="center"
             android:textSize="34px"
             android:textColor="@color/white"
-            android:text="旋转"
-            android:layout_marginLeft="600px"
-            android:layout_marginTop="45px"
+            android:text="重置"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="300px"
             android:layout_below="@+id/rl_pic_bg"
-            android:background="@drawable/bg_pic_adjust_blue"
+            android:background="@drawable/bg_pic_adjust_black"
             />
 
 
         <Button
-            android:layout_width="250px"
+            android:id="@+id/btn_pic_submit"
+            android:layout_width="350px"
             android:layout_height="100px"
             android:gravity="center"
             android:textSize="34px"
             android:textColor="@color/white"
-            android:text="旋转"
+            android:text="确定"
             android:layout_marginLeft="600px"
-            android:layout_marginTop="45px"
+            android:layout_marginTop="300px"
             android:layout_below="@+id/rl_pic_bg"
             android:background="@drawable/bg_pic_adjust_blue"
             />
@@ -516,4 +575,22 @@
             />
 
     </RelativeLayout>
+
+    <!--加载框-->
+    <RelativeLayout
+        android:id="@+id/rl_loading_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="200px"
+            android:layout_height="200px"
+            android:layout_centerInParent="true"
+            android:tooltipText="加载中..."
+
+            />
+    </RelativeLayout>
+
 </RelativeLayout>

@@ -51,7 +51,7 @@ public class AudioSelectAdapter  extends RecyclerView.Adapter {
                 myHolder.radioButton.setText("USB");
                 break;
             case 3:
-                myHolder.radioButton.setText("Line ni");
+                myHolder.radioButton.setText("Line in");
                 break;
             case 4:
                 myHolder.radioButton.setText("Mic in");

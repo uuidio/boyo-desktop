@@ -51,8 +51,9 @@ public class PicImgAdapter extends RecyclerView.Adapter {
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                notifyItemChanged(currySel);
                 currySel=position;
-                notifyDataSetChanged();
+                notifyItemChanged(position);
             }
         });
 
