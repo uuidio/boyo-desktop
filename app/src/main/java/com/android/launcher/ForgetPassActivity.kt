@@ -28,7 +28,7 @@ class ForgetPassActivity : AppCompatActivity() {
                 object:CountDownTimer(60*1000,1000){
                     override fun onFinish() {
                        tv_send_confirm.text="发送验证码"
-                        tv_send_confirm.isEnabled=false
+                        tv_send_confirm.isEnabled=true
                     }
 
                     override fun onTick(millisUntilFinished: Long) {
@@ -55,7 +55,7 @@ class ForgetPassActivity : AppCompatActivity() {
 
     //发送短信验证码
     fun sendCode(){
-        APIFactory.create().anchorCode("18589023060")
+        APIFactory.create().anchorCode(et_user.text.toString())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe (

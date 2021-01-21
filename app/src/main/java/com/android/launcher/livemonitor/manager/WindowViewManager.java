@@ -25,6 +25,7 @@ public class WindowViewManager {
     private WindowManager windowManager;
     private RemovableView floatBall;
     public View floatBooks;
+    public View floatPic;
     private boolean ismove;
     private boolean isShow = false;
     private static Vibrator sVibrator;
@@ -47,6 +48,7 @@ public class WindowViewManager {
         sVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         floatBall = new RemovableView(context.getApplicationContext(),null);
         floatBooks=View.inflate(context.getApplicationContext(), R.layout.view_float_autocue,null);
+        floatPic=View.inflate(context.getApplicationContext(), R.layout.view_float_pic,null);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -77,6 +79,7 @@ public class WindowViewManager {
             windowManager.removeView(floatBall);
             try {
                 windowManager.removeView(floatBooks);
+                windowManager.removeView(floatPic);
             }catch (Exception e){}
             isShow = false;
         }

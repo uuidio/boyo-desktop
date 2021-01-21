@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.Html;
 import android.text.method.MovementMethod;
 import android.text.method.ScrollingMovementMethod;
@@ -43,6 +44,7 @@ import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.android.launcher.livemonitor.common.ToastUtils;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
+import com.bumptech.glide.Glide;
 import com.camerakit.CameraKit;
 import com.camerakit.CameraKitView;
 import com.hotron.c002fac.tools.HotronJni;
@@ -92,6 +94,12 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     private float mDownX;
     private float mDownY;
 
+    //贴纸位置
+    float pic_moveX;
+    float pic_moveY;
+    float pic_image_moveX ;
+    float pic_image_moveY ;
+
     public RemovableView(Context context) {
         this(context, null);
     }
@@ -124,31 +132,8 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         llNormal=view.findViewById(R.id.rl_normal);
         imDrop=view.findViewById(R.id.im_drop);
         rl_about=view.findViewById(R.id.rl_about);
-        rl_imgku=view.findViewById(R.id.rl_imgku);
-        rv_img_type=view.findViewById(R.id.rv_img_type);
-        rv_img=view.findViewById(R.id.rv_img);
-        tv_back=view.findViewById(R.id.tv_back);
-        tv_submit=view.findViewById(R.id.tv_submit);
         rv_inscription=view.findViewById(R.id.rv_inscription);
         tv_about=view.findViewById(R.id.tv_about);
-        rl_pic_adjust=view.findViewById(R.id.rl_pic_adjust);
-        iv_pic_image=view.findViewById(R.id.iv_pic_image);
-        tv_pic_back=view.findViewById(R.id.tv_pic_back);
-        btn_pic_resize=view.findViewById(R.id.btn_pic_resize);
-        btn_pic_roation=view.findViewById(R.id.btn_pic_roation);
-        btn_pic_reset=view.findViewById(R.id.btn_pic_reset);
-        btn_pic_submit=view.findViewById(R.id.btn_pic_submit);
-        seekbar_pic=view.findViewById(R.id.seekbar_pic);
-        rl_pic_bg=view.findViewById(R.id.rl_pic_bg);
-        rl_loading_dialog=view.findViewById(R.id.rl_loading_dialog);
-
-        tv_back.setOnClickListener(this);
-        tv_submit.setOnClickListener(this);
-        tv_pic_back.setOnClickListener(this);
-        btn_pic_resize.setOnClickListener(this);
-        btn_pic_roation.setOnClickListener(this);
-        btn_pic_reset.setOnClickListener(this);
-        btn_pic_submit.setOnClickListener(this);
 
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
@@ -193,7 +178,11 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if (position==0){
+                        showPicView();
+                        rl_pic_adjust.setVisibility(GONE);
+                        rv_img.setVisibility(View.GONE);
                         rl_imgku.setVisibility(View.VISIBLE);
+                        rv_img_type.setAdapter(null);
                         rv_img_type.setVisibility(View.VISIBLE);
                         tv_submit.setVisibility(View.GONE);
                         //获取贴纸素材
@@ -203,8 +192,6 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         });
         rvPic.setAdapter(picAdapter);
 
-        rv_img_type.setLayoutManager(new GridLayoutManager(getContext(),4));
-        rv_img.setLayoutManager(new GridLayoutManager(getContext(),4));
 
         //题词器
         rv_inscription.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false){
@@ -526,6 +513,9 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     if (position==0){
+                                        showPicView();
+                                        rl_pic_adjust.setVisibility(GONE);
+                                        rv_img.setVisibility(View.GONE);
                                         rl_imgku.setVisibility(View.VISIBLE);
                                         rv_img_type.setAdapter(null);
                                         rv_img_type.setVisibility(View.VISIBLE);
@@ -535,6 +525,15 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                                     }else{
                                         //TODO...贴纸使用....
                                     }
+                                }
+                            });
+
+                            picAdapter.setUpdatelistener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    //打开调整界面
+                                    showPicView();
+                                    openPicAdjust(picAdapter.getListData(position));
                                 }
                             });
                             rvPic.setAdapter(picAdapter);
@@ -554,8 +553,12 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                     @Override
                     public void accept(PicImgRsp picImgRsp) throws Exception {
                         if (picImgRsp.getCode() == 0 ) {
-                            if (rvPic.getVisibility() == View.VISIBLE)
+                            //关闭图库调整
+                            dismissFloatPic();
+                            if (rvPic.getVisibility() == View.VISIBLE){
                                 imgPeopleList();
+                            }
+
                         }else{
                             ToastUtils.showLong(picImgRsp.getMessage());
 
@@ -655,6 +658,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 }else{
                     rl_imgku.setVisibility(View.GONE);
                     rv_img_type.setVisibility(View.GONE);
+                    dismissFloatPic();
                 }
                 break;
             case R.id.tv_submit:
@@ -670,6 +674,9 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             case R.id.tv_pic_back:
                 //退出贴纸调整页面
                 rl_pic_adjust.setVisibility(View.GONE);
+                if (rl_imgku.getVisibility()!=View.VISIBLE){
+                    dismissFloatPic();
+                }
                 break;
             case R.id.btn_pic_roation:
                 //贴纸旋转
@@ -677,31 +684,46 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 break;
             case R.id.btn_pic_resize:
                 //贴纸重置大小
-                ViewGroup.LayoutParams params=  iv_pic_image.getLayoutParams();
+                seekbar_pic.setProgress(100);
+                break;
+            case R.id.btn_pic_reset:
+                //贴纸重置
+                iv_pic_image.setRotation(0);
+                RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
+                if (params==null){
+                    params= new RelativeLayout.LayoutParams(270,270);
+                    params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+                }
                 params.width=270;
                 params.height=270;
                 iv_pic_image.setLayoutParams(params);
-                break;
-            case R.id.btn_pic_reset:
-                //贴纸重置大小
-                RelativeLayout.LayoutParams resetParams= (RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
-                resetParams.width=270;
-                resetParams.height=270;
-                resetParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                iv_pic_image.setLayoutParams(resetParams);
-                iv_pic_image.requestLayout();
+                iv_pic_image.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        iv_pic_image.setX(246);
+                        iv_pic_image.setY(542);
+                        seekbar_pic.setProgress(100);
+                    }
+                });
+
                 break;
             case R.id.btn_pic_submit:
                 //贴纸添加
-                PicImgAdapter adapter= (PicImgAdapter)rv_img.getAdapter();
-                PicImgRsp.Location location=adapter.getAdapterData().get(adapter.getCurrySel()).getLocation();
-                location.setWidth(iv_pic_image.getWidth());
-                location.setHeight(iv_pic_image.getHeight());
-                location.setLeftPer(iv_pic_image.getLeft()/rl_pic_bg.getWidth());
-                location.setRoate(iv_pic_image.getRotation());
-                location.setTopPer(iv_pic_image.getTop()/rl_pic_bg.getHeight());
-                imagePeopleSave(adapter.getAdapterData().get(adapter.getCurrySel()).getId()
-                ,GsonUtil.gsonString(location));
+                if (curryPicData!=null){
+                    PicImgRsp.Location location;
+                    if (curryPicData.getLocation()==null || curryPicData.getLocation().isEmpty()){
+                        location=new  PicImgRsp.Location(0f,0f,0f,0);
+                    }else{
+                        location=GsonUtil.gsonToBean(curryPicData.getLocation(),PicImgRsp.Location.class);
+                    }
+                    location.setSizePer(seekbar_pic.getProgress());
+                    location.setLeftPer(iv_pic_image.getX()/(float)rl_pic_bg.getWidth());
+                    location.setRoate(iv_pic_image.getRotation());
+                    location.setTopPer(iv_pic_image.getY()/(float)rl_pic_bg.getHeight());
+                    imagePeopleSave(curryPicData.getId()
+                            ,GsonUtil.gsonString(location));
+                }
+
                 break;
             case R.id.btn_pre_page:
                 //笔记上一页
@@ -752,9 +774,35 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     }
 
     //打开调整贴纸界面
-
+    private PicImgRsp.Data curryPicData; //当前修改的数据
     private void openPicAdjust(PicImgRsp.Data data){
-        rl_pic_adjust.setVisibility(View.VISIBLE);
+        curryPicData=null;
+        if (data!=null){
+            curryPicData=data;
+            Glide.with(getContext()).load(data.getImg()).into(iv_pic_image);
+            rl_imgku.setVisibility(View.GONE);
+            rl_pic_adjust.setVisibility(View.VISIBLE);
+            rl_pic_adjust.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (data.getLocation()!=null && !data.getLocation().isEmpty()){
+                        PicImgRsp.Location location=  GsonUtil.gsonToBean(data.getLocation(),PicImgRsp.Location.class);
+                        iv_pic_image.setRotation(location.getRoate());
+                        seekbar_pic.setProgress(location.getSizePer());
+                        iv_pic_image.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                iv_pic_image.setX(location.getLeftPer()*rl_pic_bg.getWidth());
+                                iv_pic_image.setY(location.getTopPer()*rl_pic_bg.getHeight());
+                            }
+                        });
+                    }else{
+                        btn_pic_reset.performClick();
+                    }
+                }
+            });
+        }
+
     }
 
 
@@ -804,6 +852,131 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             tv_books_tag3.setText("");
             tv_page_num.setText("0/0");
             tv_books_content.setText("");
+        }
+    }
+
+
+    //添加图库界面
+    private View floatpic;
+    public void showPicView(){
+        if (floatpic==null){
+            floatpic=WindowViewManager.getViewManagerInstance().floatPic;
+            FullFloatViewParama fullFloatViewParama = new FullFloatViewParama(0, 0);
+            rl_imgku=floatpic.findViewById(R.id.rl_imgku);
+            rv_img_type=floatpic.findViewById(R.id.rv_img_type);
+            rv_img=floatpic.findViewById(R.id.rv_img);
+            tv_back=floatpic.findViewById(R.id.tv_back);
+            tv_submit=floatpic.findViewById(R.id.tv_submit);
+            rl_pic_adjust=floatpic.findViewById(R.id.rl_pic_adjust);
+            iv_pic_image=floatpic.findViewById(R.id.iv_pic_image);
+            tv_pic_back=floatpic.findViewById(R.id.tv_pic_back);
+            btn_pic_resize=floatpic.findViewById(R.id.btn_pic_resize);
+            btn_pic_roation=floatpic.findViewById(R.id.btn_pic_roation);
+            btn_pic_reset=floatpic.findViewById(R.id.btn_pic_reset);
+            btn_pic_submit=floatpic.findViewById(R.id.btn_pic_submit);
+            seekbar_pic=floatpic.findViewById(R.id.seekbar_pic);
+            rl_pic_bg=floatpic.findViewById(R.id.rl_pic_bg);
+            rl_loading_dialog=floatpic.findViewById(R.id.rl_loading_dialog);
+            tv_back.setOnClickListener(this);
+            tv_submit.setOnClickListener(this);
+            tv_pic_back.setOnClickListener(this);
+            btn_pic_resize.setOnClickListener(this);
+            btn_pic_roation.setOnClickListener(this);
+            btn_pic_reset.setOnClickListener(this);
+            btn_pic_submit.setOnClickListener(this);
+
+            rv_img_type.setLayoutManager(new GridLayoutManager(getContext(),4));
+            rv_img.setLayoutManager(new GridLayoutManager(getContext(),4));
+
+            seekbar_pic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
+                    if (params==null){
+                        params= new RelativeLayout.LayoutParams(270,270);
+                        params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+                    }
+                    params.width=(int)(2.7*progress);
+                    params.height=(int)(2.7*progress);
+                    iv_pic_image.setLayoutParams(params);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    float curryX=iv_pic_image.getX();
+                    float curryY=iv_pic_image.getY();
+                    if (curryX<0){
+                        curryX=0;
+                    }
+                    else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+                        curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+                    }
+
+                    if (curryY<0){
+                        curryY=0;
+                    }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+                        curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+                    }
+
+                    iv_pic_image.setX(curryX);
+                    iv_pic_image.setY(curryY);
+                }
+            });
+
+            iv_pic_image.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            pic_moveX =event.getRawX();
+                            pic_moveY=event.getRawY();
+                            pic_image_moveX = iv_pic_image.getX();
+                            pic_image_moveY = iv_pic_image.getY();
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            float nowX = event.getRawX()-pic_moveX;
+                            float nowY = event.getRawY()-pic_moveY;
+                            float curryX=pic_image_moveX+nowX;
+                            float curryY=pic_image_moveY+nowY;
+                            if (curryX<0){
+                                curryX=0;
+                            }
+                            else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+                                curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+                            }
+
+                            if (curryY<0){
+                                curryY=0;
+                            }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+                                curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+                            }
+
+                            iv_pic_image.setX(curryX);
+                            iv_pic_image.setY(curryY);
+                            break;
+                        case MotionEvent.ACTION_UP:
+
+                            break;
+                    }
+                    return true;
+                }
+            });
+
+            windowManager.addView(floatpic, fullFloatViewParama.getLayoutParams());
+        }else{
+            floatpic.setVisibility(View.VISIBLE);
+        }
+    }
+
+    //关闭图库
+    public void dismissFloatPic(){
+        if (floatpic!=null){
+            floatpic.setVisibility(View.GONE);
         }
     }
 }

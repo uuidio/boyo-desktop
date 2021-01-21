@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!--图库-->
+    <RelativeLayout
+        android:id="@+id/rl_imgku"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/pic_bg_grey"
+        android:clickable="true"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="90px"
+            android:background="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/btn_back_normal"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="返回"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20px"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="图库"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:id="@+id/tv_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="确定"
+            android:visibility="gone"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20px"
+            android:layout_marginTop="30px"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_img_type"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pic_bg_grey"
+            android:layout_marginTop="90px"
+            android:visibility="gone"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pic_bg_grey"
+            android:layout_marginTop="90px"
+            android:visibility="gone"
+            />
+
+
+
+    </RelativeLayout>
+
+    <!--贴纸调整-->
+    <RelativeLayout
+        android:id="@+id/rl_pic_adjust"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/pic_bg_grey"
+        android:clickable="true"
+        android:clipChildren="false"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="90px"
+            android:background="@color/black"/>
+
+        <TextView
+            android:id="@+id/tv_pic_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/btn_back_normal"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="返回"
+            android:textColor="@color/white"
+            android:layout_marginLeft="20px"
+            android:layout_marginTop="30px"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:clickable="true"
+            android:text="贴纸调整(可拖动)"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:layout_marginTop="30px"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_pic_bg"
+            android:layout_width="761px"
+            android:layout_height="1353px"
+            android:layout_centerHorizontal="true"
+            android:background="@color/black"
+            android:layout_marginTop="97px">
+
+            <ImageView
+                android:layout_width="270px"
+                android:scaleType="centerCrop"
+                android:id="@+id/iv_pic_image"
+                android:layout_centerInParent="true"
+                android:layout_height="270px"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:textColor="@color/black"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="77px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:text="快速调整"/>
+
+        <Button
+            android:id="@+id/btn_pic_resize"
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="原始大小"
+            android:layout_marginLeft="270px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+
+        <Button
+            android:id="@+id/btn_pic_roation"
+            android:layout_width="250px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="旋转"
+            android:layout_marginLeft="700px"
+            android:layout_marginTop="45px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30px"
+            android:textColor="@color/black"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="200px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:text="贴纸大小"/>
+
+        <SeekBar
+            android:id="@+id/seekbar_pic"
+            android:layout_width="650px"
+            android:layout_height="30px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:layout_marginLeft="270px"
+            android:layout_marginTop="205px"
+            android:paddingStart="0px"
+            android:paddingEnd="0px"
+            android:splitTrack="false"
+            android:max="200"
+            android:progressDrawable="@drawable/progressbar_color"
+            android:thumb="@drawable/shape_circle_blue"
+            android:progress="100"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_alignLeft="@id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="0%"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_marginLeft="305px"
+            android:layout_alignLeft="@+id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="100%"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20px"
+            android:layout_below="@id/seekbar_pic"
+            android:layout_alignRight="@id/seekbar_pic"
+            android:layout_marginTop="5px"
+            android:text="200%"/>
+
+        <Button
+            android:id="@+id/btn_pic_reset"
+            android:layout_width="350px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="重置"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="300px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_black"
+            />
+
+
+        <Button
+            android:id="@+id/btn_pic_submit"
+            android:layout_width="350px"
+            android:layout_height="100px"
+            android:gravity="center"
+            android:textSize="34px"
+            android:textColor="@color/white"
+            android:text="确定"
+            android:layout_marginLeft="600px"
+            android:layout_marginTop="300px"
+            android:layout_below="@+id/rl_pic_bg"
+            android:background="@drawable/bg_pic_adjust_blue"
+            />
+
+    </RelativeLayout>
+
+    <!--加载框-->
+    <RelativeLayout
+        android:id="@+id/rl_loading_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:visibility="gone">
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="200px"
+            android:layout_height="200px"
+            android:layout_centerInParent="true"
+            android:tooltipText="加载中..."
+
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

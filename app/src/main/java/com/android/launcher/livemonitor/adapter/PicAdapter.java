@@ -32,6 +32,7 @@ public class PicAdapter extends RecyclerView.Adapter {
     private Context context;
     private List<PicImgRsp.Data> list;
     private AdapterView.OnItemClickListener listener;
+    private AdapterView.OnItemClickListener updatelistener;
     public PicAdapter(Context context,List<PicImgRsp.Data> list, AdapterView.OnItemClickListener listener)
     {
         this.context=context;
@@ -54,7 +55,7 @@ public class PicAdapter extends RecyclerView.Adapter {
              viewHolder.reduce.setVisibility(View.GONE);
              viewHolder.update.setVisibility(View.GONE);
          }else {
-             Glide.with(context).load(list.get(position).getImg()).into(viewHolder.image);
+             Glide.with(context).load(list.get(position-1).getImg()).into(viewHolder.image);
          }
 
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +71,7 @@ public class PicAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 //删去
-                imagePeopleSave(list.get(position).getId());
+                imagePeopleSave(list.get(position-1).getId());
             }
         });
 
@@ -78,6 +79,9 @@ public class PicAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 //修改
+                if (updatelistener!=null && position>0){
+                    updatelistener.onItemClick(null,viewHolder.image,position,getItemId(position));
+                }
             }
         });
     }
@@ -140,5 +144,16 @@ public class PicAdapter extends RecyclerView.Adapter {
     public void reset(){
         list=null;
         notifyDataSetChanged();
+    }
+
+    public void setUpdatelistener(AdapterView.OnItemClickListener listener){
+        updatelistener=listener;
+    }
+
+    public PicImgRsp.Data getListData(int position) {
+        if (position==0){
+            return null;
+        }
+        return list.get(position-1);
     }
 }

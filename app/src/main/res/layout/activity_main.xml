@@ -106,6 +106,15 @@
             android:layout_marginTop="597px"/>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="有效日期"
+            android:textSize="36px"
+            android:layout_marginLeft="41px"
+            android:layout_marginTop="761px"/>
+
+        <TextView
             android:id="@+id/tv_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -142,6 +151,18 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="44px"
             android:layout_marginTop="600px"/>
+
+
+        <TextView
+            android:id="@+id/tv_effective_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text=""
+            android:textSize="36px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="44px"
+            android:layout_marginTop="761px"/>
 
 
         <Button

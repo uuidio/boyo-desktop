@@ -26,7 +26,7 @@ data class PicImgRsp(
     data class Data(
             var id: Int,
             var name: String,
-            var location: Location,
+            var location: String,
             var img: String
     )
 
@@ -34,7 +34,7 @@ data class PicImgRsp(
             var topPer: Float=0f,
             var leftPer: Float=0f,
             var roate: Float=0f,
-            var width: Int,
-            var height: Int
+            var sizePer: Int=100
+
     )
 }
