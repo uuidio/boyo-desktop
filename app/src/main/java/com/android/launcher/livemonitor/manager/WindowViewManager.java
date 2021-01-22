@@ -79,8 +79,11 @@ public class WindowViewManager {
             windowManager.removeView(floatBall);
             try {
                 windowManager.removeView(floatBooks);
+            }catch (Exception e){}
+            try {
                 windowManager.removeView(floatPic);
             }catch (Exception e){}
+
             isShow = false;
         }
     }

@@ -1,20 +1,29 @@
 package com.android.launcher.livemonitor.api.entity
 
+import com.google.gson.JsonElement
+
 data class VersionRsp(
-        val code: Int,
-        val `data`: VersionData?,
-        val msg: Any,
-        val ok: Boolean
+        var code: Int,
+        var result: JsonElement,
+        var message: String
 ){
+data class Result(
+    var created_at: String,
+    var file_name: String,
+    var id: Int,
+    var updated_at: String,
+    var url: String,
+    var versions: String
+)
     data class VersionData(
-            val createTime: String,
-            val description: String,
-            val fileKey: String,
-            val id: Int,
-            val md5: String,
-            val name: String,
-            val seq: Int,
-            val status: String,
-            val type: String
+            var createTime: String,
+            var description: String,
+            var fileKey: String,
+            var id: Int,
+            var md5: String,
+            var name: String,
+            var seq: Int,
+            var status: String,
+            var type: String
     )
 }

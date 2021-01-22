@@ -11,7 +11,7 @@
         android:layout_width="141px"
         android:layout_marginLeft="68px"
         android:id="@+id/logo"
-        android:background="@mipmap/logo_icon"
+        android:background="@mipmap/icon_jumeiji"
         android:layout_marginTop="86px"
         android:layout_height="117px"/>
 

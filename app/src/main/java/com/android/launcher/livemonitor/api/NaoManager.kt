@@ -122,7 +122,7 @@ object NaoManager {
         val userData = GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(LiveApplication.liveApplication, "userData", "").toString(), User.UserData::class.java)
         var headerMap=HashMap<String,String>();
         headerMap["Accept"] = "application/json"
-        headerMap["Authorization"] = "Bearer "+(userData?.access_token?:"")
+        headerMap["Authorization"] =(userData?.token_type?:"")+" "+(userData?.access_token?:"")
         return headerMap;
     }
 }

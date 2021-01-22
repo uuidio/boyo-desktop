@@ -13,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.AnyRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.launcher.livemonitor.api.APIFactory;
 import com.android.launcher.livemonitor.api.NaoManager;
 import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
+import com.android.launcher.livemonitor.api.entity.AutocueRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.android.launcher.livemonitor.api.entity.User;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AppListPageView mAppListPageView = null;
     private AppChangeReceiver mAppChangeReceiver = null;
     private RelativeLayout rl_user_info;
-    private TextView tv_id,tv_name;
+    private TextView tv_id,tv_name,tv_effective_data;
     private Button btn_exit_login;
 
     private class AppChangeReceiver extends BroadcastReceiver {
@@ -74,15 +76,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_exit_login=findViewById(R.id.btn_exit_login);
         tv_name=findViewById(R.id.tv_name);
         tv_id=findViewById(R.id.tv_id);
+        tv_effective_data=findViewById(R.id.tv_effective_data);
         ImageView iv_people=findViewById(R.id.iv_people);
         iv_people.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 User.UserData userData=GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(MainActivity.this,"userData","").toString(), User.UserData.class);
                 String id= TextUtils.isEmpty(userData.getId()+"")?"":userData.getId()+"";
-                String name=TextUtils.isEmpty(userData.getName())?"":userData.getName();
+                String name=TextUtils.isEmpty(userData.getUsername())?"":userData.getUsername();
                 tv_id.setText(id);
                 tv_name.setText(name);
+                tv_effective_data.setText(TextUtils.isEmpty(userData.getExpiration())?"":userData.getExpiration());
                 rl_user_info.setVisibility(View.VISIBLE);
             }
         });
@@ -108,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         rl_user_info=findViewById(R.id.rl_user_info);
 
-        ceshi();
     }
 
     @Override
@@ -131,17 +134,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         unregisterReceiver(mAppChangeReceiver);
         super.onDestroy();
-    }
-
-    private void ceshi() {
-         APIFactory.INSTANCE.create().autocueClassifyList(NaoManager.INSTANCE.getAccessToken(),80)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<AutocueClassifyRsp>(){
-                    @Override
-                    public void accept(AutocueClassifyRsp rsp) throws Exception {
-
-                    }
-                });
     }
 }

@@ -40,6 +40,7 @@ import com.android.launcher.livemonitor.api.NaoManager;
 import com.android.launcher.livemonitor.api.entity.AboutRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueRsp;
+import com.android.launcher.livemonitor.api.entity.NormalRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.android.launcher.livemonitor.common.ToastUtils;
@@ -83,8 +84,8 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     private RecyclerView rvAudio,rvPic,rv_img_type,rv_img,rv_inscription;
 
     private LinearLayout llRightVideo;
-    private ImageView imDrop,iv_books,iv_pic_image;
-    private TextView tv_back,tv_submit,tv_about,tv_books_tag1,tv_books_tag2,
+    private ImageView imDrop,iv_books,iv_pic_image,iv_about_img;
+    private TextView tv_back,tv_submit,tv_about_title,tv_about_content,tv_books_tag1,tv_books_tag2,
             tv_books_tag3,tv_books_content,tv_page_num,tv_books_title,tv_pic_back;
     private Button btn_books_narrow,btn_books_close,btn_pre_page,btn_next_page,
             btn_pic_resize,btn_pic_roation,btn_pic_reset,btn_pic_submit;
@@ -133,7 +134,9 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         imDrop=view.findViewById(R.id.im_drop);
         rl_about=view.findViewById(R.id.rl_about);
         rv_inscription=view.findViewById(R.id.rv_inscription);
-        tv_about=view.findViewById(R.id.tv_about);
+        tv_about_title=view.findViewById(R.id.tv_about_title);
+        tv_about_content=view.findViewById(R.id.tv_about_content);
+        iv_about_img=view.findViewById(R.id.iv_about_img);
 
         llNormal.setOnClickListener(v -> {
             if (radioVideo.getVisibility()==VISIBLE)
@@ -549,10 +552,11 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),tag_id,1,location)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<PicImgRsp>() {
+                .subscribe(new Consumer<NormalRsp>() {
+                    @SuppressLint("CheckResult")
                     @Override
-                    public void accept(PicImgRsp picImgRsp) throws Exception {
-                        if (picImgRsp.getCode() == 0 ) {
+                    public void accept(NormalRsp norImgRsp) throws Exception {
+                        if (norImgRsp.getCode() == 0 ) {
                             //关闭图库调整
                             dismissFloatPic();
                             if (rvPic.getVisibility() == View.VISIBLE){
@@ -560,7 +564,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                             }
 
                         }else{
-                            ToastUtils.showLong(picImgRsp.getMessage());
+                            ToastUtils.showLong(norImgRsp.getMessage());
 
                         }
                     }
@@ -638,9 +642,11 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                     @Override
                     public void accept(AboutRsp rsp) throws Exception {
                         if (rsp.getCode()==0){
-                            String html="<h5><font color='#FFFFFF' >"+rsp.getResult().getTitle()+"</font></h5>"
-                                    +rsp.getResult().getNotice();
-                            tv_about.setText(Html.fromHtml(html));
+                            tv_about_title.setText(rsp.getResult().getTitle());
+                            tv_about_content.setText(rsp.getResult().getNotice());
+                            if (rsp.getResult().getImg()!=null){
+                                Glide.with(getContext()).load(rsp.getResult().getImg()).into(iv_about_img);
+                            }
                         }
                     }
                 });

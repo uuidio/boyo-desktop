@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import com.android.launcher.R;
 import com.android.launcher.livemonitor.api.APIFactory;
 import com.android.launcher.livemonitor.api.NaoManager;
+import com.android.launcher.livemonitor.api.entity.NormalRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
-import com.android.launcher.livemonitor.bean.PicBean;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -114,9 +114,9 @@ public class PicAdapter extends RecyclerView.Adapter {
         APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),tag_id,0,"")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<PicImgRsp>(){
+                .subscribe(new Consumer<NormalRsp>(){
                     @Override
-                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                    public void accept(NormalRsp picImgRsp) throws Exception {
                         if (picImgRsp.getCode()==0){
                             imgPeopleList();
                         }

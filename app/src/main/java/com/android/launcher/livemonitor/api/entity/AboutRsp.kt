@@ -1,15 +1,18 @@
 package com.android.launcher.livemonitor.api.entity
 
 data class AboutRsp(
-    val code: Int,
-    val message: String,
-    val result: Result
+    var code: Int,
+    var message: String,
+    var result: Result
 ){
     data class Result(
-            val created_at: String,
-            val id: Int,
-            val notice: String,
-            val title: String,
-            val updated_at: String
+            var created_at: String,
+            var id: Int,
+            var notice: String,
+            var title: String,
+            var img: String,
+            var location: String,
+            var wide_ratio: String,
+            var updated_at: String
     )
 }

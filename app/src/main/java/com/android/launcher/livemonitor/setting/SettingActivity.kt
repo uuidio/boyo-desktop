@@ -8,6 +8,7 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.android.launcher.GsonUtil
 import com.android.launcher.R
 import com.android.launcher.livemonitor.api.APIFactory
 import com.android.launcher.livemonitor.api.NaoManager
@@ -35,11 +36,11 @@ class SettingActivity : AppCompatActivity() {
         ll_back.setOnClickListener { finish() }
         ll_network.setOnClickListener { startActivity(Intent(this, NetWorkSettingActivity::class.java)) }
         ll_updata.setOnClickListener {
-            APIFactory.create().checkVersion(AppUtils.getAppVersionCode())
+            APIFactory.create().checkVersion(AppUtils.getAppVersionName())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe({
-                        if (it.ok && it.data != null) {
+                        if (it.code==0) {
                             upDialog.show()
                             upDialog.clickLister = (object : RemindDialog.OnClickLister {
                                 override fun cancle() {
@@ -71,7 +72,7 @@ class SettingActivity : AppCompatActivity() {
 
     private var downloadId = 0
 
-    private inner class DownloadApkListener(private val md5: String) : DownloadListener {
+    private inner class DownloadApkListener() : DownloadListener {
 
         private fun toastLong(message: String) {
             ToastUtils.showLong(message)
@@ -101,7 +102,8 @@ class SettingActivity : AppCompatActivity() {
         override fun onTaskSuccess(fileName: String) {
             toastLong("APK下载完成")
             upDialog.dismiss()
-            installApkWithMd5(fileName, md5)
+//            installApkWithMd5(fileName, md5)
+            startActivity(getInstallAppIntent(File(fileName)))
         }
 
         override fun onTaskFailure(task: DownloadTask, e: DownloadException) {
@@ -140,8 +142,8 @@ class SettingActivity : AppCompatActivity() {
     }
 
     private fun startDownload(data: VersionRsp) {
-        if (data.data!!.seq > 0) {
-            val apkUrl = NaoManager.baseUrl() + "/apks/download/" + data.data.seq + "?type=LIVE"
+        if (data.result!=null && data.result.isJsonObject && data.result.asJsonObject.has("url")) {
+            val apkUrl =data.result.asJsonObject.get("url").toString()
             val filePath = this.cacheDir!!.path + File.separator + "apk/live_monitor.apk"
             downloadId = DownloadTaskBuilder()
                     .setFileUrl(apkUrl)
@@ -149,7 +151,7 @@ class SettingActivity : AppCompatActivity() {
                     .setRetryTime(5)
                     .setConcurrency(1)
                     .setRetryInterval(10000)
-                    .setDownloadListener(DownloadApkListener(data.data.md5))
+                    .setDownloadListener(DownloadApkListener())
                     .build()
                     .run { Downloader.getInstance().start(this) }
         }

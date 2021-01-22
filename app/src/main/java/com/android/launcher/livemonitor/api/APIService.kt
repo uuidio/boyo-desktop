@@ -12,8 +12,8 @@ import retrofit2.http.*
  */
 interface APIService {
 
-    @GET("/apks/check/{version}/")
-    fun checkVersion(@Path("version") version: Int, @Query("type") type: String = "LIVE"): Observable<VersionRsp>
+    @GET("/live/v1/versions/check")
+    fun checkVersion(@Query("versions") versions: String): Observable<VersionRsp>
 
 
     @FormUrlEncoded
@@ -36,7 +36,7 @@ interface APIService {
     //个人素材图片保存或删去操作(0：删除，1：新增）
     @FormUrlEncoded
     @POST("/live/v1/tagImageApp/save")
-    fun imagePeopleSave(@HeaderMap headerMap:HashMap<String,String>, @Field("img_id") img_id:Int, @Field("select") select:Int, @Field("location") location:String): Observable<PicImgRsp>
+    fun imagePeopleSave(@HeaderMap headerMap:HashMap<String,String>, @Field("img_id") img_id:Int, @Field("select") select:Int, @Field("location") location:String): Observable<NormalRsp>
 
 
     //题词分类列表
@@ -62,6 +62,11 @@ interface APIService {
     @FormUrlEncoded
     @POST("/live/v1/anchor/resetPwd")
     fun anchorResetPwd(@Field("mobile") mobile:String,@Field("password") password:String,@Field("code") code:String): Observable<SendCodeRsp>
+
+
+    //验证登录TOKEN
+    @GET("/live/v1/live/oauth")
+    fun liveOauth(@HeaderMap headerMap:HashMap<String,String>): Observable<NormalRsp>
 
 
 

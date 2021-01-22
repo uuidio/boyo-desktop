@@ -7,8 +7,8 @@ final buildDate = ext.buildDate
 android {
 
     defaultConfig {
-        versionCode versionCodeBuild
-        versionName versionNameBuild
+        versionCode 2
+        versionName "V1.0.0D2021.01.221" //V+版本号+D+日期
     }
 
     applicationVariants.all { variant ->
@@ -19,12 +19,9 @@ android {
                 } else {
                     // apk_渠道名-版本号-版本名称-编译时间.apk
                     def variantProductFlavorsName = (variant.productFlavors[0] == null ? "ssc" : variant.productFlavors[0].name) + "-"
-                    outputFileName = "live_desktop" + "-" +
-                            "${variantProductFlavorsName}" +
-                            "${variant.mergedFlavor.versionCode}-" +
-                            "${variant.mergedFlavor.versionName}-" +
-                            "${buildDate}-" +
-                            "${variant.buildType.name}.apk"
+                    outputFileName =
+                            "${variant.mergedFlavor.versionName}"+
+                            ".apk"
                 }
             }
         }
