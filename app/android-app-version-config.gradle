@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         versionCode 2
-        versionName "V1.0.0D2021.01.221" //V+版本号+D+日期
+        versionName "V1.0.0D2021.01.22" //V+版本号+D+日期
     }
 
     applicationVariants.all { variant ->
