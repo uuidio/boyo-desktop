@@ -12,7 +12,7 @@ public class LiveApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         liveApplication=this;
-        NaoManager.init(this, BuildType.DEBUG)
+        NaoManager.init(this, BuildType.RELEASE)
         UtilsInitializer.init(this)
     }
 }

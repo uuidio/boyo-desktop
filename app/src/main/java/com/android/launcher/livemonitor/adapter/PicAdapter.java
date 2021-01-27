@@ -11,6 +11,7 @@ import com.android.launcher.R;
 import com.android.launcher.livemonitor.api.APIFactory;
 import com.android.launcher.livemonitor.api.NaoManager;
 import com.android.launcher.livemonitor.api.entity.NormalRsp;
+import com.android.launcher.livemonitor.api.entity.PeoPleImgRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.bumptech.glide.Glide;
 
@@ -30,10 +31,10 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class PicAdapter extends RecyclerView.Adapter {
     private Context context;
-    private List<PicImgRsp.Data> list;
+    private List<PeoPleImgRsp.Data> list;
     private AdapterView.OnItemClickListener listener;
     private AdapterView.OnItemClickListener updatelistener;
-    public PicAdapter(Context context,List<PicImgRsp.Data> list, AdapterView.OnItemClickListener listener)
+    public PicAdapter(Context context,List<PeoPleImgRsp.Data> list, AdapterView.OnItemClickListener listener)
     {
         this.context=context;
         this.list=list;
@@ -71,7 +72,7 @@ public class PicAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 //删去
-                imagePeopleSave(list.get(position-1).getId());
+                imagePeopleSave(list.get(position-1).getId(),list.get(position-1).getImg_id());
             }
         });
 
@@ -110,8 +111,9 @@ public class PicAdapter extends RecyclerView.Adapter {
 
 
     //删除贴纸素材图片
-    private void imagePeopleSave(int tag_id) {
-        APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),tag_id,0,"")
+    private void imagePeopleSave(int id,int img_id) {
+        APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),img_id,0,""
+                ,"",id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Consumer<NormalRsp>(){
@@ -129,9 +131,9 @@ public class PicAdapter extends RecyclerView.Adapter {
         APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<PicImgRsp>(){
+                .subscribe(new Consumer<PeoPleImgRsp>(){
                     @Override
-                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                    public void accept(PeoPleImgRsp picImgRsp) throws Exception {
                         if (picImgRsp.getCode()==0){
                            list=picImgRsp.getResult().getLists().getData();
                            notifyDataSetChanged();
@@ -150,7 +152,7 @@ public class PicAdapter extends RecyclerView.Adapter {
         updatelistener=listener;
     }
 
-    public PicImgRsp.Data getListData(int position) {
+    public PeoPleImgRsp.Data getListData(int position) {
         if (position==0){
             return null;
         }

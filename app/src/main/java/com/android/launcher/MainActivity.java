@@ -1,10 +1,13 @@
 package com.android.launcher;
 
+import android.app.ActivityManager;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,15 +23,19 @@ import com.android.launcher.livemonitor.api.APIFactory;
 import com.android.launcher.livemonitor.api.NaoManager;
 import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueRsp;
+import com.android.launcher.livemonitor.api.entity.NormalRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
 import com.android.launcher.livemonitor.api.entity.User;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
 import com.google.gson.JsonElement;
 
+import java.util.HashMap;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import sm.utils.AppUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -112,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         rl_user_info=findViewById(R.id.rl_user_info);
 
+
+        handler.postDelayed(checkOnline, 5*60*1000);
     }
 
     @Override
@@ -133,6 +142,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         unregisterReceiver(mAppChangeReceiver);
+        handler.removeCallbacks(checkOnline);
         super.onDestroy();
     }
+
+    //检查是否在线
+    private Handler handler=new Handler();
+    private Runnable checkOnline = new Runnable() {
+        @Override
+        public void run() {
+            checkToken();
+            handler.postDelayed(checkOnline, 5*60*1000);
+        }
+    };
+
+    //验证登录token
+    private void checkToken() {
+        APIFactory.INSTANCE.create().checkNotice(NaoManager.INSTANCE.getAccessToken())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<NormalRsp>() {
+                               @Override
+                               public void accept(NormalRsp normalRsp) throws Exception {
+                                   if (normalRsp.getCode()!=0){
+                                       handler.removeCallbacks(checkOnline);
+                                       WindowViewManager.getViewManagerInstance().close();
+                                        Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                                       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                       startActivity(intent);
+                                       MainActivity.this.finish();
+
+                                   }
+                               }
+                           }
+                );
+    }
+
 }

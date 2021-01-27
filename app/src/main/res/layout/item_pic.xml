@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="171px"
     android:layout_marginBottom="24px"
+    android:paddingBottom="30px"
     android:layout_marginLeft="20px"
-    android:layout_height="171px">
+    android:layout_height="wrap_content">
 
 
     <ImageView
@@ -13,7 +14,7 @@
         android:layout_marginTop="@dimen/dp_10"
         android:layout_centerHorizontal="true"
         android:background="@color/teal_200"
-        android:layout_height="148px"/>
+        android:layout_height="263px"/>
 
 
     <ImageView
@@ -21,6 +22,7 @@
         android:background="@mipmap/pic_reduce"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="15px"
         android:id="@+id/im_reduce"
         android:layout_height="46px"/>
 
@@ -29,6 +31,7 @@
         android:background="@mipmap/pic_xiugai"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+        android:layout_marginLeft="15px"
         android:id="@+id/im_update"
         android:layout_height="46px"/>
 

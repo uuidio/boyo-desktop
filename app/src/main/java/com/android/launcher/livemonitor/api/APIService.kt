@@ -3,7 +3,10 @@ package com.android.launcher.livemonitor.api
 import com.android.launcher.livemonitor.api.entity.*
 import com.google.gson.JsonElement
 import io.reactivex.Observable
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
+import java.io.File
 
 
 /**
@@ -30,13 +33,20 @@ interface APIService {
     fun imageList(@HeaderMap headerMap:HashMap<String,String>,@Query("tag_id") tag_id:Int,@Query("per_page") per_page:Int): Observable<PicImgRsp>
 
     //个人素材图片列表
-    @GET("/live/v1/tag/image/list?select=1")
-    fun imagePeopleList(@HeaderMap headerMap:HashMap<String,String>,@Query("per_page") per_page:Int): Observable<PicImgRsp>
+    @GET("/live/v1/liveTag/image/list")
+    fun imagePeopleList(@HeaderMap headerMap:HashMap<String,String>,@Query("per_page") per_page:Int): Observable<PeoPleImgRsp>
 
-    //个人素材图片保存或删去操作(0：删除，1：新增）
+    //个人素材图片上传
+    @Multipart
+    @POST("/live/v1/upload/image")
+    fun uploadImage(@HeaderMap headerMap:HashMap<String,String>, @Part image:MultipartBody.Part): Observable<JsonElement>
+
+
+    //个人素材图片保存或删去操作(0：删除，1：新增，2：修改）
     @FormUrlEncoded
     @POST("/live/v1/tagImageApp/save")
-    fun imagePeopleSave(@HeaderMap headerMap:HashMap<String,String>, @Field("img_id") img_id:Int, @Field("select") select:Int, @Field("location") location:String): Observable<NormalRsp>
+    fun imagePeopleSave(@HeaderMap headerMap:HashMap<String,String>, @Field("img_id") img_id:Int, @Field("select") select:Int, @Field("location") location:String
+                        ,@Field("img") imagePath:String,@Field("id") id:Int): Observable<NormalRsp>
 
 
     //题词分类列表
@@ -69,6 +79,8 @@ interface APIService {
     fun liveOauth(@HeaderMap headerMap:HashMap<String,String>): Observable<NormalRsp>
 
 
-
+    //检查TOKEN
+    @GET("/live/v1/notice/get")
+    fun checkNotice(@HeaderMap headerMap:HashMap<String,String>): Observable<NormalRsp>
 }
 

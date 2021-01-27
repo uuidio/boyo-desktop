@@ -121,8 +121,20 @@ object NaoManager {
     fun getAccessToken():HashMap<String,String>{
         val userData = GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(LiveApplication.liveApplication, "userData", "").toString(), User.UserData::class.java)
         var headerMap=HashMap<String,String>();
-        headerMap["Accept"] = "application/json"
+//        headerMap["Accept"] = "application/json"
         headerMap["Authorization"] =(userData?.token_type?:"")+" "+(userData?.access_token?:"")
         return headerMap;
     }
+
+
+    fun getUploadAccessToken():HashMap<String,String>{
+        val userData = GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(LiveApplication.liveApplication, "userData", "").toString(), User.UserData::class.java)
+        var headerMap=HashMap<String,String>();
+        headerMap["content-type"]="multipart/form-data"
+        headerMap["Authorization"] =(userData?.token_type?:"")+" "+(userData?.access_token?:"")
+        return headerMap;
+    }
+
+
+
 }

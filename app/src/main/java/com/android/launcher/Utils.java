@@ -8,11 +8,21 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.text.TextUtils;
 
 import com.android.launcher.livemonitor.manager.WindowViewManager;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+
+import sm.utils.AppUtils;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
@@ -154,6 +164,86 @@ public class Utils {
     }
 
 
+    /**
+     * 压缩图片到目标大小以下
+     *
+     * @param mbitmap
+     * @param targetSize
+     */
+    public static Bitmap compressBmpFileToTargetSize(Bitmap mbitmap, long targetSize) {
+        if (mbitmap.getByteCount() > targetSize) {
+            // 每次宽高各缩小一半
+            int ratio = 2;
+            // 获取图片原始宽高
+            BitmapFactory.Options options = new BitmapFactory.Options();
 
+            int targetWidth =  mbitmap.getWidth() / ratio;
+            int targetHeight = mbitmap.getHeight() / ratio;
+
+            // 压缩图片到对应尺寸
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int quality = 100;
+            Bitmap result = generateScaledBmp(mbitmap, targetWidth, targetHeight, baos, quality);
+
+            // 计数保护，防止次数太多太耗时。
+            int count = 0;
+            while (baos.size() > targetSize && count <= 10) {
+                targetWidth /= ratio;
+                targetHeight /= ratio;
+                count++;
+
+                // 重置，不然会累加
+                baos.reset();
+                result = generateScaledBmp(result, targetWidth, targetHeight, baos, quality);
+            }
+
+            return result;
+        }else{
+            return  mbitmap;
+        }
+    }
+
+
+    /**
+     * 图片缩小一半
+     *
+     * @param srcBmp
+     * @param targetWidth
+     * @param targetHeight
+     * @param baos
+     * @param quality
+     * @return
+     */
+    private static Bitmap generateScaledBmp(Bitmap srcBmp, int targetWidth, int targetHeight, ByteArrayOutputStream baos, int quality) {
+        Bitmap result = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+        Rect rect = new Rect(0, 0, result.getWidth(), result.getHeight());
+        canvas.drawBitmap(srcBmp, null, rect, null);
+        if (!srcBmp.isRecycled()) {
+            srcBmp.recycle();
+        }
+        result.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        return result;
+    }
+
+
+    public static File saveBitmapFile(Context context,Bitmap bitmap){
+        String filePath = context.getExternalCacheDir().getPath() + File.separator + "ce.jpg";
+        File file=new File(filePath);//将要保存图片的路径
+        try {
+            if (file.exists()){
+                file.delete();
+            }
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 }

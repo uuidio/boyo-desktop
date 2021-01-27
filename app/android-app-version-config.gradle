@@ -7,8 +7,8 @@ final buildDate = ext.buildDate
 android {
 
     defaultConfig {
-        versionCode 2
-        versionName "V1.0.0D2021.01.22" //V+版本号+D+日期
+        versionCode 3
+        versionName "V1.0.2D2021.01.27" //V+版本号+D+日期
     }
 
     applicationVariants.all { variant ->

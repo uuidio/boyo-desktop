@@ -2,12 +2,8 @@ package com.android.launcher.livemonitor.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.hardware.Camera;
-import android.os.Build;
-import android.os.SystemClock;
-import android.text.Html;
-import android.text.method.MovementMethod;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,11 +23,8 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.launcher.C001Common;
-import com.android.launcher.ForgetPassActivity;
 import com.android.launcher.GsonUtil;
+import com.android.launcher.Utils;
 import com.android.launcher.livemonitor.adapter.AutocueClassifyAdapter;
 import com.android.launcher.livemonitor.adapter.PicImgAdapter;
 import com.android.launcher.livemonitor.adapter.PicTypeAdapter;
@@ -41,31 +34,46 @@ import com.android.launcher.livemonitor.api.entity.AboutRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueClassifyRsp;
 import com.android.launcher.livemonitor.api.entity.AutocueRsp;
 import com.android.launcher.livemonitor.api.entity.NormalRsp;
+import com.android.launcher.livemonitor.api.entity.PeoPleImgRsp;
 import com.android.launcher.livemonitor.api.entity.PicImgRsp;
 import com.android.launcher.livemonitor.api.entity.TagListRsp;
+import com.android.launcher.livemonitor.common.BuildType;
 import com.android.launcher.livemonitor.common.ToastUtils;
 import com.android.launcher.livemonitor.manager.WindowViewManager;
 import com.bumptech.glide.Glide;
-import com.camerakit.CameraKit;
-import com.camerakit.CameraKitView;
-import com.hotron.c002fac.tools.HotronJni;
+
 import com.android.launcher.R;
 import com.android.launcher.livemonitor.adapter.AudioSelectAdapter;
 import com.android.launcher.livemonitor.adapter.PicAdapter;
-import com.hotron.c002fac.camera.CameraWrapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.AbstractCollection;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import me.leefeng.promptlibrary.PromptDialog;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 
 /**
  * Created on 2020/12/3.
@@ -508,9 +516,9 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
         APIFactory.INSTANCE.create().imagePeopleList(NaoManager.INSTANCE.getAccessToken(),3000)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<PicImgRsp>(){
+                .subscribe(new Consumer<PeoPleImgRsp>(){
                     @Override
-                    public void accept(PicImgRsp picImgRsp) throws Exception {
+                    public void accept(PeoPleImgRsp picImgRsp) throws Exception {
                         if (picImgRsp.getCode()==0){
                             PicAdapter picAdapter=new PicAdapter(getContext(),picImgRsp.getResult().getLists().getData(), new AdapterView.OnItemClickListener(){
                                 @Override
@@ -536,7 +544,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     //打开调整界面
                                     showPicView();
-                                    openPicAdjust(picAdapter.getListData(position));
+                                    openPicAdjust(picAdapter.getListData(position),true);
                                 }
                             });
                             rvPic.setAdapter(picAdapter);
@@ -545,41 +553,122 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 });
     }
 
+    //上传个人图片
+    private void updatePeopleImg(File file) {
+        // RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), img);
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), file);
+        RequestBody bo=new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("image",file.getName(), fileBody)
+                .build();
+        MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), bo);
 
-    //添加贴纸素材图片
-    private void imagePeopleSave(int tag_id,String location) {
-        rl_loading_dialog.setVisibility(View.VISIBLE);
-        APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(),tag_id,1,location)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<NormalRsp>() {
-                    @SuppressLint("CheckResult")
+//        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpg"), file);
+//        // MultipartBody.Part  和后端约定好Key，这里的partName是用file
+//        MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+        OkHttpClient okHttpClient =new OkHttpClient().newBuilder()
+                .connectTimeout(20,TimeUnit.SECONDS)
+                .writeTimeout(20,TimeUnit.SECONDS)
+                .readTimeout(20,TimeUnit.SECONDS)
+                .build();
+        Request request = new Request.Builder().url("https://lanlink.smartconns.com/live/v1/upload/image")
+                .addHeader("Authorization", NaoManager.INSTANCE.getUploadAccessToken().get("Authorization"))
+                .addHeader("content-type", "multipart/form-data")
+                .post(bo)
+                .build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getHandler().post(new Runnable() {
                     @Override
-                    public void accept(NormalRsp norImgRsp) throws Exception {
-                        if (norImgRsp.getCode() == 0 ) {
-                            //关闭图库调整
-                            dismissFloatPic();
-                            if (rvPic.getVisibility() == View.VISIBLE){
-                                imgPeopleList();
-                            }
-
-                        }else{
-                            ToastUtils.showLong(norImgRsp.getMessage());
-
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        ToastUtils.showLong("网络错误!");
-                        rl_loading_dialog.setVisibility(View.GONE);
-                    }
-                }, new Action() {
-                    @Override
-                    public void run() throws Exception {
+                    public void run() {
+                        ToastUtils.showLong("网络异常！");
                         rl_loading_dialog.setVisibility(View.GONE);
                     }
                 });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String data=response.body().string();
+                getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        rl_loading_dialog.setVisibility(View.GONE);
+                        JsonObject norImgRsp= (JsonObject) JsonParser.parseString(data);
+                        if (norImgRsp.getAsJsonObject().get("code").getAsInt()==0){
+                            String imgPath=norImgRsp.getAsJsonObject().get("result").getAsJsonObject()
+                                    .get("pic_url").getAsString();
+
+                            if (mIsUpdate){
+                                imagePeopleSave(imgPath,2);
+                            }else {
+                                imagePeopleSave(imgPath,1);
+                            }
+                        }else{
+                            ToastUtils.showLong("网络异常！");
+                        }
+                    }
+                });
+            }
+        });
+
+
+    }
+
+
+
+    //添加/更新贴纸素材图片
+    private void imagePeopleSave(String filepath,int select) {
+        if (curryPicData!=null) {
+            PicImgRsp.Location location;
+            if (curryPicData.getLocation() == null || curryPicData.getLocation().isEmpty()) {
+                location = new PicImgRsp.Location(0f, 0f, 0f, 0);
+            } else {
+                location = GsonUtil.gsonToBean(curryPicData.getLocation(), PicImgRsp.Location.class);
+            }
+            location.setSizePer(seekbar_pic.getProgress());
+            location.setLeftPer(iv_pic_image.getX() / (float) rl_pic_bg.getWidth());
+            location.setRoate(iv_pic_image.getRotation());
+            location.setTopPer(iv_pic_image.getY() / (float) rl_pic_bg.getHeight());
+
+            rl_loading_dialog.setVisibility(View.VISIBLE);
+            APIFactory.INSTANCE.create().imagePeopleSave(NaoManager.INSTANCE.getAccessToken(), curryPicData.getImg_id(), select, GsonUtil.gsonString(location)
+                    ,filepath,curryPicData.getId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Consumer<NormalRsp>() {
+                        @SuppressLint("CheckResult")
+                        @Override
+                        public void accept(NormalRsp norImgRsp) throws Exception {
+                            if (norImgRsp.getCode() == 0) {
+                                //关闭图库调整
+                                dismissFloatPic();
+                                if (rvPic.getVisibility() == View.VISIBLE) {
+                                    try {
+                                        imgPeopleList();
+                                    }catch (Exception e){}
+
+                                }
+
+                            } else {
+                                ToastUtils.showLong(norImgRsp.getMessage());
+
+                            }
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            ToastUtils.showLong("网络错误!");
+                            rl_loading_dialog.setVisibility(View.GONE);
+                        }
+                    }, new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            rl_loading_dialog.setVisibility(View.GONE);
+                        }
+                    });
+        }
     }
 
     //获取题词分类列表
@@ -673,7 +762,16 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                     PicImgAdapter adapter= (PicImgAdapter)rv_img.getAdapter();
                    if (adapter.getCurrySel()>-1 && !adapter.getAdapterData().isEmpty()){
                        //打开调整界面
-                       openPicAdjust(adapter.getAdapterData().get(adapter.getCurrySel()));
+                       PicImgRsp.Data curryData= adapter.getAdapterData().get(adapter.getCurrySel());
+                       PeoPleImgRsp.Data data=new PeoPleImgRsp.Data(
+                               -1,
+                               curryData.getId(),
+                               curryData.getName(),
+                               curryData.getLocation(),
+                               curryData.getImg(),
+                               ""
+                       );
+                       openPicAdjust(data,false);
                    }
                 }
                 break;
@@ -691,6 +789,29 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             case R.id.btn_pic_resize:
                 //贴纸重置大小
                 seekbar_pic.setProgress(100);
+                iv_pic_image.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        float curryX=iv_pic_image.getX();
+                        float curryY=iv_pic_image.getY();
+                        if (curryX<0){
+                            curryX=0;
+                        }
+                        else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+                            curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+                        }
+
+                        if (curryY<0){
+                            curryY=0;
+                        }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+                            curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+                        }
+
+                        iv_pic_image.setX(curryX);
+                        iv_pic_image.setY(curryY);
+                    }
+                });
+
                 break;
             case R.id.btn_pic_reset:
                 //贴纸重置
@@ -706,8 +827,8 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 iv_pic_image.post(new Runnable() {
                     @Override
                     public void run() {
-                        iv_pic_image.setX(246);
-                        iv_pic_image.setY(542);
+                        iv_pic_image.setX(218);
+                        iv_pic_image.setY(492);
                         seekbar_pic.setProgress(100);
                     }
                 });
@@ -715,21 +836,22 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 break;
             case R.id.btn_pic_submit:
                 //贴纸添加
-                if (curryPicData!=null){
-                    PicImgRsp.Location location;
-                    if (curryPicData.getLocation()==null || curryPicData.getLocation().isEmpty()){
-                        location=new  PicImgRsp.Location(0f,0f,0f,0);
-                    }else{
-                        location=GsonUtil.gsonToBean(curryPicData.getLocation(),PicImgRsp.Location.class);
-                    }
-                    location.setSizePer(seekbar_pic.getProgress());
-                    location.setLeftPer(iv_pic_image.getX()/(float)rl_pic_bg.getWidth());
-                    location.setRoate(iv_pic_image.getRotation());
-                    location.setTopPer(iv_pic_image.getY()/(float)rl_pic_bg.getHeight());
-                    imagePeopleSave(curryPicData.getId()
-                            ,GsonUtil.gsonString(location));
+                rl_loading_dialog.setVisibility(View.VISIBLE);
+                //使控件可以进行缓存
+                rl_pic_bg.setDrawingCacheEnabled(true);
+                //获取缓存的 Bitmap
+                Bitmap drawingCache = rl_pic_bg.getDrawingCache();
+                //复制获取的 Bitmap
+                drawingCache = Bitmap.createBitmap(drawingCache);
+                //关闭视图的缓存
+                rl_pic_bg.setDrawingCacheEnabled(false);
+                File file=Utils.saveBitmapFile(mContext,Utils.compressBmpFileToTargetSize(drawingCache,300*1024));
+                //上传图片
+                if (file!=null){
+                    updatePeopleImg(file);
+                }else{
+                    rl_loading_dialog.setVisibility(View.GONE);
                 }
-
                 break;
             case R.id.btn_pre_page:
                 //笔记上一页
@@ -780,13 +902,19 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     }
 
     //打开调整贴纸界面
-    private PicImgRsp.Data curryPicData; //当前修改的数据
-    private void openPicAdjust(PicImgRsp.Data data){
+    private PeoPleImgRsp.Data curryPicData; //当前修改的数据
+    private boolean mIsUpdate; //当前是否修改数据
+    private void openPicAdjust(PeoPleImgRsp.Data data,boolean isUpdate){
         curryPicData=null;
+        mIsUpdate=isUpdate;
         if (data!=null){
             curryPicData=data;
-            Glide.with(getContext()).load(data.getImg()).into(iv_pic_image);
-            rl_imgku.setVisibility(View.GONE);
+            Glide.with(getContext()).load(data.getBackground_img()).into(iv_pic_image);
+            if (isUpdate){
+                rl_imgku.setVisibility(View.GONE);
+            }else {
+                rl_imgku.setVisibility(View.VISIBLE);
+            }
             rl_pic_adjust.setVisibility(View.VISIBLE);
             rl_pic_adjust.post(new Runnable() {
                 @Override
