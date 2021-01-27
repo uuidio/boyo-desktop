@@ -571,7 +571,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 .writeTimeout(20,TimeUnit.SECONDS)
                 .readTimeout(20,TimeUnit.SECONDS)
                 .build();
-        Request request = new Request.Builder().url("https://lanlink.smartconns.com/live/v1/upload/image")
+        Request request = new Request.Builder().url(NaoManager.INSTANCE.baseUrl(BuildType.RELEASE)+"live/v1/upload/image")
                 .addHeader("Authorization", NaoManager.INSTANCE.getUploadAccessToken().get("Authorization"))
                 .addHeader("content-type", "multipart/form-data")
                 .post(bo)

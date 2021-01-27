@@ -8,7 +8,7 @@ apply from: rootProject.file('android-base-config.gradle')
 android {
 
     defaultConfig {
-        applicationId "aacom.android.aalauncheraa"
+        applicationId "com.android.launcher"
         multiDexEnabled = true
         androidExtensions {
             experimental = true

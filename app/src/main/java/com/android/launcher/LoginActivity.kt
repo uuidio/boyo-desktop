@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            checkUpdate()
+            checkUpdate(true)
         }
 
         iv_setting.setOnClickListener {
@@ -66,16 +66,18 @@ class LoginActivity : AppCompatActivity() {
         et_password.setText(loginPass.toString())
 
         //检查更新
-        checkUpdate()
+        checkUpdate(false)
 
     }
 
     //denglu
-    private fun login() {
+    private fun login(isTis: Boolean) {
         progress.visibility= View.VISIBLE
         if (et_user.text.toString().isEmpty() || et_password.text.toString().isEmpty()){
             progress.visibility= View.GONE
-            ToastUtils.showLong("账号或密码没有填写")
+            if (isTis){
+                ToastUtils.showLong("账号或密码没有填写")
+            }
             return
         }
         var map=HashMap<String,String>()
@@ -129,7 +131,7 @@ class LoginActivity : AppCompatActivity() {
 
     //检查更新APK
     @SuppressLint("CheckResult")
-    private fun checkUpdate() {
+    private fun checkUpdate(isTis: Boolean) {
         if (upDialog.isShowing){
             return
         }
@@ -148,11 +150,7 @@ class LoginActivity : AppCompatActivity() {
                             upDialog.clickLister = null
                             startDownload(it)
                     }else{
-                        //判断是否有登录信息
-                        var userData=SharedPreferencesUtils.getParam(this@LoginActivity,"userData","").toString()
-                        if (userData.isNotEmpty()){
-                           login()
-                        }
+                        login(isTis)
                     }
                 }, {
                     progress.visibility= View.GONE
@@ -170,7 +168,7 @@ class LoginActivity : AppCompatActivity() {
 
                         override fun ok() {
                             upDialog.dismiss()
-                            checkUpdate()
+                            checkUpdate(isTis)
 
                         }
                     })
