@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rl_user_info=findViewById(R.id.rl_user_info);
 
 
-        handler.postDelayed(checkOnline, 5*60*1000);
+//        handler.postDelayed(checkOnline, 5*60*1000);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         unregisterReceiver(mAppChangeReceiver);
-        handler.removeCallbacks(checkOnline);
+//        handler.removeCallbacks(checkOnline);
         super.onDestroy();
     }
 
@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Runnable checkOnline = new Runnable() {
         @Override
         public void run() {
-            checkToken();
-            handler.postDelayed(checkOnline, 5*60*1000);
+//            checkToken();
+//            handler.postDelayed(checkOnline, 5*60*1000);
         }
     };
 

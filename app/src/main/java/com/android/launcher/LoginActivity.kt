@@ -2,26 +2,22 @@ package com.android.launcher
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.MimeTypeMap
-import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.android.launcher.livemonitor.api.APIFactory
 import com.android.launcher.livemonitor.api.NaoManager
-import com.android.launcher.livemonitor.api.entity.User
 import com.android.launcher.livemonitor.api.entity.VersionRsp
 import com.android.launcher.livemonitor.common.ToastUtils
 import com.android.launcher.livemonitor.dialog.RemindDialog
 import com.android.launcher.livemonitor.setting.SettingActivity
-import com.google.gson.Gson
-import com.orhanobut.logger.Logger
 import com.sm.http.download.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -29,10 +25,12 @@ import kotlinx.android.synthetic.main.activity_login.*
 import sm.utils.AppUtils
 import sm.utils.FileUtils
 import java.io.File
+import java.lang.Exception
+
 
 class LoginActivity : AppCompatActivity() {
 
-    val upDialog by lazy { RemindDialog(this, "检查到有新版本，是否马上更新？") }
+    val upDialog by lazy { RemindDialog(this, "检查到有新版本，正在下载更新") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +58,10 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
+        upDialog.setCanceledOnTouchOutside(false)
+        upDialog.setCancelable(false)
+
+
         var loginUser=SharedPreferencesUtils.getParam(this@LoginActivity,"loginUser","");
         var loginPass=SharedPreferencesUtils.getParam(this@LoginActivity,"loginPass","");
         et_user.setText(loginUser.toString())
@@ -72,14 +74,15 @@ class LoginActivity : AppCompatActivity() {
 
     //denglu
     private fun login(isTis: Boolean) {
-        progress.visibility= View.VISIBLE
+
         if (et_user.text.toString().isEmpty() || et_password.text.toString().isEmpty()){
             progress.visibility= View.GONE
             if (isTis){
-                ToastUtils.showLong("账号或密码没有填写")
+                ToastUtils.showShort("账号或密码没有填写")
             }
             return
         }
+        progress.visibility= View.VISIBLE
         var map=HashMap<String,String>()
         map.put("username",et_user.text.toString())
         map.put("password",et_password.text.toString())
@@ -94,7 +97,9 @@ class LoginActivity : AppCompatActivity() {
                         SharedPreferencesUtils.setParam(this@LoginActivity,"userData",GsonUtil.gsonString(it.result));
                         SharedPreferencesUtils.setParam(this@LoginActivity,"loginUser",map.get("username").toString());
                         SharedPreferencesUtils.setParam(this@LoginActivity,"loginPass",map.get("password").toString());
-                        liveOauth()
+                        finish()
+                        startActivity(Intent(this@LoginActivity,MainActivity::class.java))
+//                        liveOauth()
                     }else{
                         progress.visibility= View.GONE
                         ToastUtils.showLong(it.message);
@@ -145,10 +150,13 @@ class LoginActivity : AppCompatActivity() {
                         return@subscribe
                     }
                     if (it.code==0){
+                            upDialog.isShowButton(false)
+                            upDialog.setTextMessage("检查到有新版本，正在下载更新")
                             upDialog.show()
-                            upDialog.setTitle("检查到有新版本")
                             upDialog.clickLister = null
+
                             startDownload(it)
+
                     }else{
                         login(isTis)
                     }
@@ -158,8 +166,9 @@ class LoginActivity : AppCompatActivity() {
                         return@subscribe
                     }
                     ToastUtils.showLong("网络异常!");
+                    upDialog.isShowButton(true)
+                    upDialog.setTextMessage("网络异常，请重新点击下载")
                     upDialog.show()
-                    upDialog.setTitle("网络异常，请重新点击下载")
                     upDialog.clickLister = (object : RemindDialog.OnClickLister {
                         override fun cancle() {
                             upDialog.dismiss()
@@ -219,8 +228,8 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun getInstallAppIntent(file: File): Intent {
-        val intent = Intent("android.intent.action.VIEW")
-        val type: String
+        var intent = Intent("android.intent.action.VIEW")
+        var type: String
         if (Build.VERSION.SDK_INT < 23) {
             intent.action = "android.intent.action.VIEW"
             type = "application/vnd.android.package-archive"
@@ -229,9 +238,13 @@ class LoginActivity : AppCompatActivity() {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(FileUtils.getFileExtension(file))
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            val contentUri = FileProvider.getUriForFile(this, "com.android.launcher.ApkFileProvider", file)
-            intent.setDataAndType(contentUri, type)
+//            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            var contentUri = FileProvider.getUriForFile(this, "com.android.launcher.ApkFileProvider", file)
+            // 授予目录临时共享权限
+            grantUriPermission(getPackageName(), contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.setDataAndType(contentUri, "application/vnd.android.package-archive")
         }
         return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
@@ -263,7 +276,4 @@ class LoginActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onBackPressed() {
-
-    }
 }

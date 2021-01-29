@@ -22,6 +22,7 @@ class RemindDialog : Dialog {
     private var title: TextView? = null
     private var cancle: Button? = null
     private var ok: Button? = null
+    private var isShow:Boolean=true
 
     private var tv_title_up: TextView? = null
 
@@ -62,6 +63,15 @@ class RemindDialog : Dialog {
 
         window?.setBackgroundDrawable(mContext.resources.getDrawable(android.R.color.transparent))
         window?.setGravity(Gravity.TOP)
+
+        if (isShow){
+            ok?.visibility = View.VISIBLE
+            cancle?.visibility = View.VISIBLE
+        }else{
+            ok?.visibility = View.GONE
+            cancle?.visibility = View.GONE
+        }
+
         super.show()
     }
 
@@ -78,6 +88,14 @@ class RemindDialog : Dialog {
         tv_title_up?.visibility = View.VISIBLE
         progress?.visibility = View.VISIBLE
         tv_title_up?.text = "正在下载更新"
+    }
+
+    fun isShowButton(isShow:Boolean){
+       this.isShow=isShow
+    }
+
+    fun setTextMessage(text:String){
+        mTitle = text
     }
 
     fun setProgress(p: Int) {
