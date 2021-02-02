@@ -328,14 +328,14 @@
 
 
         <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="450px"
+            android:layout_height="match_parent"
             android:layout_below="@+id/tv_about_title"
             android:layout_marginTop="20px">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="450px"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <TextView
@@ -352,7 +352,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30px"
                     android:layout_gravity="center_horizontal"
-                    android:maxWidth="490px"
+                    android:maxWidth="450px"
                     />
             </LinearLayout>
 

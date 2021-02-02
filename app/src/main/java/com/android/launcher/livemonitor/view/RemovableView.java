@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Size;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,11 +50,14 @@ import com.android.launcher.livemonitor.adapter.AudioSelectAdapter;
 import com.android.launcher.livemonitor.adapter.PicAdapter;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -737,7 +742,22 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                             tv_about_title.setText(rsp.getResult().getTitle());
                             tv_about_content.setText(rsp.getResult().getNotice());
                             if (rsp.getResult().getImg()!=null){
-                                Glide.with(getContext()).load(rsp.getResult().getImg()).into(iv_about_img);
+                                Glide.with(getContext()).asBitmap().load(rsp.getResult().getImg())
+                                    .into(new SimpleTarget<Bitmap>() {
+                                        @Override
+                                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                            if (resource!=null){
+                                                LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                                layoutParams.width=resource.getWidth();
+                                                layoutParams.height=resource.getHeight();
+                                                layoutParams.topMargin=30;
+                                                layoutParams.gravity= Gravity.CENTER_HORIZONTAL;
+                                                iv_about_img.setLayoutParams(layoutParams);
+                                                iv_about_img.setMaxWidth(450);
+                                                iv_about_img.setBackground(new BitmapDrawable(resource));
+                                            }
+                                        }
+                                    });
                             }
                         }
                     }
