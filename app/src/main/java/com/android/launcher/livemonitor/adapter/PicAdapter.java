@@ -52,7 +52,7 @@ public class PicAdapter extends RecyclerView.Adapter {
         MyViewHolder viewHolder= (MyViewHolder) holder;
          if (position==0)
          {
-             viewHolder.image.setBackgroundResource(R.drawable.bg_pic_add);
+             viewHolder.image.setBackgroundResource(R.mipmap.btn_add_blue);
              viewHolder.reduce.setVisibility(View.GONE);
              viewHolder.update.setVisibility(View.GONE);
          }else {

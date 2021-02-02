@@ -3,7 +3,7 @@ package com.android.launcher.livemonitor.api.entity
 data class AboutRsp(
     var code: Int,
     var message: String,
-    var result: Result
+    var result: Result?
 ){
     data class Result(
             var created_at: String,

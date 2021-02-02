@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 User.UserData userData=GsonUtil.gsonToBean(SharedPreferencesUtils.getParam(MainActivity.this,"userData","").toString(), User.UserData.class);
-                String id= TextUtils.isEmpty(userData.getId()+"")?"":userData.getId()+"";
+                String id= SharedPreferencesUtils.getParam(MainActivity.this,"loginUser","").toString();
                 String name=TextUtils.isEmpty(userData.getUsername())?"":userData.getUsername();
                 tv_id.setText(id);
                 tv_name.setText(name);

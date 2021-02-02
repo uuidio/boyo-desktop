@@ -733,7 +733,7 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                 .subscribe(new Consumer<AboutRsp>(){
                     @Override
                     public void accept(AboutRsp rsp) throws Exception {
-                        if (rsp.getCode()==0){
+                        if (rsp.getCode()==0 && rsp.getResult()!=null){
                             tv_about_title.setText(rsp.getResult().getTitle());
                             tv_about_content.setText(rsp.getResult().getNotice());
                             if (rsp.getResult().getImg()!=null){
