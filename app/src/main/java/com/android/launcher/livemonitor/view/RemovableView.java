@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,6 +46,8 @@ import com.bumptech.glide.Glide;
 import com.android.launcher.R;
 import com.android.launcher.livemonitor.adapter.AudioSelectAdapter;
 import com.android.launcher.livemonitor.adapter.PicAdapter;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -87,11 +90,11 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     private RadioButton radioVideo, radioAudio, radioPic, radioAbout,radioInscription;
     private LinearLayout llBar;
 
-    private RelativeLayout llNormal,rl_about,rl_imgku,rl_books,rl_pic_adjust,rl_pic_bg,rl_loading_dialog;
+    private RelativeLayout llNormal,rl_about,rl_imgku,rl_books,rl_pic_adjust,rl_loading_dialog;
 
     private RecyclerView rvAudio,rvPic,rv_img_type,rv_img,rv_inscription;
 
-    private LinearLayout llRightVideo;
+    private LinearLayout llRightVideo,rl_pic_bg;
     private ImageView imDrop,iv_books,iv_pic_image,iv_about_img;
     private TextView tv_back,tv_submit,tv_about_title,tv_about_content,tv_books_tag1,tv_books_tag2,
             tv_books_tag3,tv_books_content,tv_page_num,tv_books_title,tv_pic_back;
@@ -789,46 +792,46 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             case R.id.btn_pic_resize:
                 //贴纸重置大小
                 seekbar_pic.setProgress(100);
-                iv_pic_image.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        float curryX=iv_pic_image.getX();
-                        float curryY=iv_pic_image.getY();
-                        if (curryX<0){
-                            curryX=0;
-                        }
-                        else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
-                            curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
-                        }
-
-                        if (curryY<0){
-                            curryY=0;
-                        }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
-                            curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
-                        }
-
-                        iv_pic_image.setX(curryX);
-                        iv_pic_image.setY(curryY);
-                    }
-                });
+//                iv_pic_image.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        float curryX=iv_pic_image.getX();
+//                        float curryY=iv_pic_image.getY();
+//                        if (curryX<0){
+//                            curryX=0;
+//                        }
+//                        else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+//                            curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+//                        }
+//
+//                        if (curryY<0){
+//                            curryY=0;
+//                        }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+//                            curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+//                        }
+//
+//                        iv_pic_image.setX(curryX);
+//                        iv_pic_image.setY(curryY);
+//                    }
+//                });
 
                 break;
             case R.id.btn_pic_reset:
                 //贴纸重置
                 iv_pic_image.setRotation(0);
-                RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
+                LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)iv_pic_image.getLayoutParams();
                 if (params==null){
-                    params= new RelativeLayout.LayoutParams(270,270);
-                    params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+                    params= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+//                        params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
                 }
-                params.width=270;
-                params.height=270;
+                params.width=RelativeLayout.LayoutParams.WRAP_CONTENT;
+                params.height=RelativeLayout.LayoutParams.WRAP_CONTENT;
                 iv_pic_image.setLayoutParams(params);
                 iv_pic_image.post(new Runnable() {
                     @Override
                     public void run() {
-                        iv_pic_image.setX(218);
-                        iv_pic_image.setY(492);
+                        iv_pic_image.setX(0);
+                        iv_pic_image.setY(0);
                         seekbar_pic.setProgress(100);
                     }
                 });
@@ -904,12 +907,21 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
     //打开调整贴纸界面
     private PeoPleImgRsp.Data curryPicData; //当前修改的数据
     private boolean mIsUpdate; //当前是否修改数据
+    private Size adjustPreSize;//记录上一次图片调整大小
     private void openPicAdjust(PeoPleImgRsp.Data data,boolean isUpdate){
         curryPicData=null;
+        adjustPreSize=null;
         mIsUpdate=isUpdate;
         if (data!=null){
             curryPicData=data;
-            Glide.with(getContext()).load(data.getBackground_img()).into(iv_pic_image);
+            Glide.with(getContext()).asBitmap().load(data.getBackground_img())
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource,  Transition<? super Bitmap> transition) {
+                            adjustPreSize=new Size(resource.getWidth(),resource.getHeight());
+                            iv_pic_image.setImageBitmap(resource);
+                        }
+                    });
             if (isUpdate){
                 rl_imgku.setVisibility(View.GONE);
             }else {
@@ -1022,17 +1034,21 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
             rv_img_type.setLayoutManager(new GridLayoutManager(getContext(),4));
             rv_img.setLayoutManager(new GridLayoutManager(getContext(),4));
 
+
             seekbar_pic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams) iv_pic_image.getLayoutParams();
+                    LinearLayout.LayoutParams params=(LinearLayout.LayoutParams) iv_pic_image.getLayoutParams();
                     if (params==null){
-                        params= new RelativeLayout.LayoutParams(270,270);
-                        params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+                        params= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+//                        params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
                     }
-                    params.width=(int)(2.7*progress);
-                    params.height=(int)(2.7*progress);
-                    iv_pic_image.setLayoutParams(params);
+                    if (adjustPreSize!=null){
+                        params.width=(int)((float)adjustPreSize.getWidth()/100f*progress);
+                        params.height=(int)((float)adjustPreSize.getHeight()/100f*progress);
+                        iv_pic_image.setLayoutParams(params);
+
+                    }
                 }
 
                 @Override
@@ -1042,23 +1058,23 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    float curryX=iv_pic_image.getX();
-                    float curryY=iv_pic_image.getY();
-                    if (curryX<0){
-                        curryX=0;
-                    }
-                    else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
-                        curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
-                    }
-
-                    if (curryY<0){
-                        curryY=0;
-                    }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
-                        curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
-                    }
-
-                    iv_pic_image.setX(curryX);
-                    iv_pic_image.setY(curryY);
+//                    float curryX=iv_pic_image.getX();
+//                    float curryY=iv_pic_image.getY();
+//                    if (curryX<0){
+//                        curryX=0;
+//                    }
+//                    else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+//                        curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+//                    }
+//
+//                    if (curryY<0){
+//                        curryY=0;
+//                    }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+//                        curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+//                    }
+//
+//                    iv_pic_image.setX(curryX);
+//                    iv_pic_image.setY(curryY);
                 }
             });
 
@@ -1077,18 +1093,18 @@ public class RemovableView extends FrameLayout implements View.OnClickListener {
                             float nowY = event.getRawY()-pic_moveY;
                             float curryX=pic_image_moveX+nowX;
                             float curryY=pic_image_moveY+nowY;
-                            if (curryX<0){
-                                curryX=0;
-                            }
-                            else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
-                                curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
-                            }
-
-                            if (curryY<0){
-                                curryY=0;
-                            }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
-                                curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
-                            }
+//                            if (curryX<0){
+//                                curryX=0;
+//                            }
+//                            else if (curryX+iv_pic_image.getWidth() >rl_pic_bg.getWidth()){
+//                                curryX=rl_pic_bg.getWidth()-iv_pic_image.getWidth();
+//                            }
+//
+//                            if (curryY<0){
+//                                curryY=0;
+//                            }else if (curryY+iv_pic_image.getHeight() >rl_pic_bg.getHeight()){
+//                                curryY=rl_pic_bg.getHeight()-iv_pic_image.getHeight();
+//                            }
 
                             iv_pic_image.setX(curryX);
                             iv_pic_image.setY(curryY);

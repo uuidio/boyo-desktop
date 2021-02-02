@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:text="提词器"
+                android:text="提词本"
                 android:id="@+id/radio_inscription"
                 android:textColor="@color/white"
                 android:textSize="24px"
